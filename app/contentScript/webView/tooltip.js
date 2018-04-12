@@ -869,16 +869,20 @@ function greeting(name) {
 
 $('*').hover(
     function(e){
+        $(".uniqueClassForSelectedNode").prop('title', css_title);
+        $(".uniqueClassForSelectedNode").css('border', css_store);
+        $(".uniqueClassForSelectedNode").removeClass('uniqueClassForSelectedNode');
         css_title = $(this).prop('title');
         css_store = $(this).css('border');
-        $(this).css('border', '1px dotted black');
+        $(this).addClass('uniqueClassForSelectedNode').css('border', '1px dotted black');
         greeting($(this));
         e.preventDefault();
         e.stopPropagation();
         return false;
     },function(e){
-        $(this).prop('title', css_title);
-        $(this).css('border', css_store);
+        $(".uniqueClassForSelectedNode").prop('title', css_title);
+        $(".uniqueClassForSelectedNode").css('border', css_store);
+        $(".uniqueClassForSelectedNode").removeClass('uniqueClassForSelectedNode');
         e.preventDefault();
         e.stopPropagation();
         return false;
