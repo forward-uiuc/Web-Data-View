@@ -85,12 +85,16 @@ class TestTooltip {
 
         window.onbeforeunload = function(e) {
             e.preventDefault();
-            chrome.storage.sync.get("value", function(items) {
-                if (!chrome.runtime.error) {
-                    let array = items["value"];
-                    port.postMessage({answer: "leave", domain_name: location.hostname, capa: JSON.parse(array)});
-                }
-            });
+            // if($username !== undefined) {
+            //     port.postMessage({answer: "leave", username: $username, domain_name: location.hostname});
+            // }
+            port.postMessage({answer: "exit", domain_name: location.href});
+            // chrome.storage.sync.get("value", function(items) {
+            //     if (!chrome.runtime.error) {
+            //         let array = items["value"];
+            //         port.postMessage({answer: "leave", domain_name: location.href, capa: array});
+            //     }
+            // });
         };
 
         port.onMessage.addListener(function(msg) {
@@ -140,7 +144,6 @@ class TestTooltip {
                             collected_data.push(data_to_push);
                         }
                     }
-                    console.log(collected_data);
                     // let new_desp_html = $.parseHTML(' <textarea style="height: 90px;" class="form-control" id="messageDesc" >'+ stored_query[index_pos].query_text +'</textarea>');
                     // ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').replaceWith(new_desp_html);
 
@@ -496,7 +499,7 @@ let class_to_color_idx = {};
 
 let TOOLTIP_IDS_ARRAY = ["web-view-select-similar", "web-view-remove"];
 let prev;
-document.addEventListener("click", selectionHandler);
+document.addEventListener("click", selectionHandler, true);
 
 let css_title = null;
 let css_store = null;
@@ -580,11 +583,12 @@ $('*').hover(
     }
 );
 
-function selectionHandler(event) {
+    function selectionHandler(event) {
     event.preventDefault();
+    event.stopPropagation();
     mySet.clear();
     if (TOOLTIP_IDS_ARRAY.indexOf(event.target.id ) != -1) {
-        console.log(event.target.id);
+        // console.log(event.target.id);
         tooltipHandler(event.target.id);
         return;
     }
@@ -965,8 +969,8 @@ let appendbox = [];
                         }
                     }
                     chrome.storage.local.set({'value': new_array});
-                    let new_noti = new WebDataExtractionNotation(JSON.parse(new_array[0])[0]);
-                    console.log(new_noti.matchquery());
+                    // let new_noti = new WebDataExtractionNotation(JSON.parse(new_array[0])[0]);
+                    // console.log(new_noti.matchquery());
                 }
             });
         });

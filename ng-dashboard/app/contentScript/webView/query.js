@@ -31,7 +31,7 @@ let cfq = new ContentFrame({
     'id':'webview-query',
     // 'appendTo': '#webdataview-floating-widget',
     'css': ['lib/font-awesome/css/font-awesome.css'],
-    'inlineCss': {"width": "375px", "height": "575px", "position": "fixed", "right": "10px", "top": "1px", "z-index": 2147483647, "border-radius": 6, "background": "transparent", "display": "none"}
+    'inlineCss': {"width": "375px", "height": "420px", "position": "fixed", "right": "10px", "top": "5px", "z-index": 2147483647, "border-radius": 6, "background": "transparent", "display": "display"}
 }, function(){
     // alert('callback called immediately after ContentFrame created');
     console.log("cf created successfully!");
@@ -99,22 +99,45 @@ $(document).ready(function() {
                                 let $users;
                                 let $username;
                                 let $feedback = $('#domain-feedback');
-                                let $xpath;
                                 let login = false;
-                                let target = [];
                                 let $visib = ContentFrame.findElementInContentFrame('#visib_button','#webview-query');
+                                let $visual_option = 0;
+                                let old_web_noti = [];
+                                let old_label = [];
 
                                 let current_domain = location.hostname;
                                 let domain_html = '<h5 id="currentdomain" style="font-weight: 700">Your Current Domain Name: <br><p style="color: blue; font-weight: 300;">&#9755 &nbsp;'+current_domain+'</p></h5>';
                                 ContentFrame.findElementInContentFrame('#currentdomain','#webview-query').replaceWith(domain_html);
 
+                                ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').hover(function(e){
+                                    if($visib.is(":visible")){
+                                        $('#webview-query').css('height','645px');
+                                        $('#webview-query').css('width','575px');
+                                        ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').css('height', '355px');
+                                    }
+
+                                },function(){
+                                    if($visib.is(":visible")){
+                                        $('#webview-query').css('height','440');
+                                        $('#webview-query').css('width','375px');
+                                        ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').css('height', '140px');
+                                    }
+                                });
+
+                                ContentFrame.findElementInContentFrame('#alt2','#webview-query').click(function(e) {
+                                    $('#webview-query').css('height','250px');
+                                    ContentFrame.findElementInContentFrame('#result_show_some','#webview-query').css('display','block');
+                                    ContentFrame.findElementInContentFrame('#initial_show','#webview-query').css('display','none');
+                                    ContentFrame.findElementInContentFrame('#result_show_none','#webview-query').css('display','none');
+                                    ContentFrame.findElementInContentFrame('#alt1','#webview-query').css('display','none');
+                                    ContentFrame.findElementInContentFrame('#alt2','#webview-query').css('display','none');
+                                });
 
                                 port.onMessage.addListener(function(msg) {
                                     if (msg.question === "get users"){
                                         let data = msg.data;
                                         $users = ContentFrame.findElementInContentFrame('#users','#webview-query');
                                         let user_html = '<ul class="nav" id="users" style="max-height: 40px; overflow-y:auto; list-style: none;">';
-                                        console.log(data);
                                         for(i = 0; i < data.length; i++){
                                             user_html += '<li>'+data[i]+'</li>';
                                         }
@@ -125,27 +148,79 @@ $(document).ready(function() {
                                     else if (msg.question === "feedback"){
                                         let data = msg.data;
                                         let stored_query = data.output;
-                                        console.log(stored_query);
-                                        let k = (145+(stored_query.length-2)*25).toString() + 'px';
-                                        // console.log( ContentFrame.findElementInContentFrame('#webview-note', '#webview-note'));
-                                        // ContentFrame.findElementInContentFrame('#webview-note', '#webview-note').css('height', k);
+                                        let visual_array = [];
+                                        let query_array = [];
+                                        for(i = 0; i < stored_query.length; i++) {
+                                            if(stored_query[i].model_id === 0){
+                                                visual_array.push(stored_query[i]);
+                                            }else{
+                                                query_array.push(stored_query[i]);
+                                            }
+                                        }
 
-                                        let noti_question = ContentFrame.findElementInContentFrame('#question', '#webview-note');
-                                        let noti_accept = ContentFrame.findElementInContentFrame('#note_accept', '#webview-note');
-                                        let noti_reject = ContentFrame.findElementInContentFrame('#note_reject', '#webview-note');
-                                        let question_html;
-                                        if(data.output.length !== 0){
-                                            question_html = $.parseHTML('<p id="question"><b>There are existing models with the current url, would you like to see it?</b></p>');
-                                            noti_question.replaceWith(question_html);
-                                            noti_reject.css('visibility','hidden');
-                                            let accept_html = $.parseHTML(' <button type="button" class="btn btn-success" id="note_result">Show Me</button>&nbsp;&nbsp;&nbsp;');
-                                            noti_accept.replaceWith(accept_html);
-                                        }
-                                        else{
-                                            question_html = $.parseHTML('<p id="question"><b>There is no model, please write your own.Would you like to get notification in the future?</b></p>');
-                                            noti_question.replaceWith(question_html);
-                                        }
-                                        function dynamicEvent() {
+                                        ContentFrame.findElementInContentFrame('#query_area','#webview-query').change(function(e){
+                                            $('#webview-query').css('height','420px');
+                                            ContentFrame.findElementInContentFrame('#initial_show','#webview-query').css('display','none');
+                                            ContentFrame.findElementInContentFrame('#result_show_none','#webview-query').css('display','block');
+                                            ContentFrame.findElementInContentFrame('#alt1','#webview-query').css('display','none');
+                                            ContentFrame.findElementInContentFrame('#alt2','#webview-query').css('display','block');
+                                            ContentFrame.findElementInContentFrame('#result_show_some','#webview-query').css('display','none');
+
+                                            let current_index = e.target.selectedIndex;
+                                            if(current_index === 1){
+                                                ContentFrame.findElementInContentFrame('#messageName','#webview-query').val('');
+                                                ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').val('');
+                                                return;
+                                            }
+                                            ContentFrame.findElementInContentFrame('#messageName','#webview-query').val(query_array[current_index-2].query_name);
+                                            ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').val(query_array[current_index-2].query_text);
+                                        });
+
+                                        ContentFrame.findElementInContentFrame('#visual_area','#webview-query').change(function(e){
+                                            let current_index = e.target.selectedIndex;
+                                            if($visual_option !== current_index && $visual_option !== 0){
+                                                collected_data = [];
+                                                chrome.storage.local.get("value", function(items) {
+                                                    if (!chrome.runtime.error) {
+                                                        chrome.storage.local.set({'value': {}});
+                                                    }
+                                                });
+
+                                                for(p = 0; p < old_web_noti.length; p++){
+                                                    old_web_noti[p].disappendLabel2Widget();
+                                                    old_web_noti[p].notations[old_label[p]].disapplySelectedElements();
+                                                }
+                                            }
+                                            $visual_option = current_index;
+
+                                            let new_model  = visual_array[current_index-1].model_text;
+                                            // console.log(new_model);
+
+                                            chrome.storage.local.get("value", function(items) {
+                                                if (!chrome.runtime.error) {
+                                                    chrome.storage.local.set({'value': new_model});
+                                                }
+                                            });
+                                            for(let i = 0; i < new_model.length; i++){
+                                                cur_query = new_model[i].query;
+                                                cur_label = new_model[i].label;
+                                                old_label.push(cur_label);
+                                                let new_web_noti = new WebDataExtractionNotation(new_model[i]);
+                                                old_web_noti.push(new_web_noti);
+                                                new_web_noti.extract();
+                                                let dom_list = new_web_noti.matchquery()[cur_label];
+                                                // new_web_noti.changeLabelName();
+                                                let tooltip_color = new_web_noti.label2color[cur_label];
+                                                new_web_noti.notations[cur_label].applySelectedElements(tooltip_color);
+                                                for(let j = 0; j < dom_list.length; j++){
+                                                    data_to_push = {};  //dic label name ->
+                                                    data_to_push[cur_label] = dom_list[j];
+                                                    collected_data.push(data_to_push);
+                                                }
+                                            }
+                                            // console.log(collected_data);
+                                        });
+                                        function dynamicEvent_visual() {
                                             let index_pos = parseInt((this.id).slice(-1));
                                             new_model = stored_query[index_pos].model_text;
                                             chrome.storage.local.get("value", function(items) {
@@ -173,68 +248,74 @@ $(document).ready(function() {
                                             // ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').replaceWith(new_desp_html);
 
                                         }
-                                        ContentFrame.findElementInContentFrame('#note_result', '#webview-note').click(function(e) {
-                                            e.preventDefault();
-                                            if(show_me_flag === false){
-                                                show_me_flag = true;
-                                            }
-                                            else{return;}
-                                            ContentFrame.findElementInContentFrame('#question', '#webview-note').css('display', 'none');
-                                            for(i = 0; i < stored_query.length; i++) {
-                                                let li = document.createElement('li');
-                                                li.id = 'pop' + i;
-                                                li.innerHTML = '<li><b>' + stored_query[i].model_name + ': &nbsp;&nbsp;&nbsp;</b><button type="button" class="btn btn-success"  style="background-color: #f92672 !important;">populate</button></li>';
-                                                ContentFrame.findElementInContentFrame('#query_pair', '#webview-note').append(li);
-                                                li.onclick = dynamicEvent;
-                                            }
 
-                                        });
+                                        if(visual_array.length !== 0){
+                                            $('#webview-query').css('height','250px');
+                                            ContentFrame.findElementInContentFrame('#result_show_some','#webview-query').css('display','block');
+                                            for(i = 0; i < visual_array.length; i++) {
+                                                let option = document.createElement('option');
+                                                option.id = ''+i;
+                                                option.innerHTML = '<option style="color: red;">' + visual_array[i].model_name + '</option>';
+                                                ContentFrame.findElementInContentFrame('#visual_area', '#webview-query').append(option);
+                                                // option.onclick = dynamicEvent_visual;
+                                            }
+                                        }
+                                        if(query_array.length !== 0) {
+                                            $('#webview-query').css('height','250px');
+                                            ContentFrame.findElementInContentFrame('#result_show_some','#webview-query').css('display','block');
+                                            for(i = 0; i < query_array.length; i++) {
+                                                let option = document.createElement('option');
+                                                option.id = '' + i;
+                                                option.innerHTML = '<option style="color: #125bde;">' + query_array[i].query_name + '</option>';
+                                                ContentFrame.findElementInContentFrame('#query_area', '#webview-query').append(option);
+                                                // option.onclick = dynamicEvent_query;
+                                            }
+                                        }
+                                        if(stored_query.length === 0){
+                                            $('#webview-query').css('height','420px');
+                                            ContentFrame.findElementInContentFrame('#initial_show','#webview-query').css('display','none');
+                                            ContentFrame.findElementInContentFrame('#result_show_none','#webview-query').css('display','block');
+                                        }
                                     }
                                     else if(msg.question === "no_connection"){
-                                        let noti_question = ContentFrame.findElementInContentFrame('#question', '#webview-note');
-                                        let question_html;
-                                        question_html = $.parseHTML('<p id="question"><b>There is NO connection to server!</b></p>');
+                                        let noti_question = ContentFrame.findElementInContentFrame('#initial_p','#webview-query');
+                                        let question_html = $.parseHTML('<p id="initial_p" style="font-size: large; color: red;"><b>There is NO connection to server...</b></p><p style="font-size: large; color: red;"><b>PLease Try Again!<b></p>');
                                         noti_question.replaceWith(question_html);
-                                        setTimeout(function(){$('#webview-note').css('visibility','hidden');}, 2200);
+                                        ContentFrame.findElementInContentFrame('#initial_show','#webview-query').css('display','block');
+                                        $('#webview-query').css('height','155px');
                                     }
                                     else if (msg.question === "new message") {
                                             let data = msg.data;
                                             $chat = ContentFrame.findElementInContentFrame('#chat','#webview-query');
                                             $chat.append('<li><strong>'+data.users+'</strong>: '+data.msg+'</li>');
                                             $chat.animate({scrollTop: $chat.prop("scrollHeight")}, 1000);
+                                            let data_msg = JSON.parse(data.msg);
+                                            // console.log(data_msg);
+                                            let target = [];
+                                            for(let cur_key in data_msg){
+                                                let dom_id = data_msg[cur_key];
+                                                let count = 0; let cur_class;
+                                                let elems = document.body.getElementsByTagName("*");
+                                                tool_color = "rgb" + COLORS[used_col_idx];
+                                                used_col_idx = used_col_idx + 1;
+                                                appendLabel2Widget(cur_key, tool_color);
 
-                                            let dom_id = Object.values(JSON.parse(data.msg))[0];
-                                            let target = []; let count = 0; let cur_class; let labels; let labels_dic = {};
-                                            let elems = document.body.getElementsByTagName("*");
-                                            for (i = 0; i < elems.length; i++ ){
-                                                if (elems[i].tagName != 'H2' && elems[i].tagName != 'IMG' && elems[i].tagName != 'H1' && elems[i].tagName != 'H3' && elems[i].tagName != 'H4')
-                                                {
-                                                    count ++;
-                                                    continue;
-                                                }
-                                                if(dom_id.indexOf(count) > -1) {
-                                                    target.push(elems[i]);
-                                                    cur_class = elems[i].className;
-                                                    if (cur_class in class_to_color_idx){
-                                                        tool_color = "rgb" + COLORS[class_to_color_idx[cur_class]];
-                                                        labels = ntc.name(rgb2hex(tool_color))[1];
-                                                        labels_dic[cur_class] = labels;
+                                                for (i = 0; i < elems.length; i++ ){
+                                                    // if (elems[i].tagName != 'H2' && elems[i].tagName != 'IMG' && elems[i].tagName != 'H1' && elems[i].tagName != 'H3' && elems[i].tagName != 'H4')
+                                                    // {
+                                                    //     count ++;
+                                                    //     continue;
+                                                    // }
+                                                    count++;
+                                                    if(dom_id.indexOf(count) > -1) {
+                                                        target.push([elems[i], tool_color]);
+                                                        let data_to_push = {};  //dic label name ->
+                                                        data_to_push[cur_key] = elems[i];
+                                                        collected_data.push(data_to_push);
                                                     }
-                                                    else{
-                                                        class_to_color_idx[cur_class] = used_col_idx;
-                                                        tool_color = "rgb" + COLORS[used_col_idx];
-                                                        used_col_idx = used_col_idx + 1;
-                                                        labels = ntc.name(rgb2hex(tool_color))[1];
-                                                        labels_dic[cur_class] = labels;
-                                                        appendLabel2Widget(labels, tool_color);
-                                                    }
-                                                    let data_to_push = {};  //dic label name ->
-                                                    data_to_push[labels_dic[cur_class]] = elems[i];
-                                                    collected_data.push(data_to_push);
+
                                                 }
-                                                count++;
                                             }
-
 
                                             ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').css('height','50px');
 
@@ -243,14 +324,12 @@ $(document).ready(function() {
                                                 $visib.click(function(e){
                                                     e.preventDefault();
                                                     for(i=0; i < target.length; i++){
-                                                        console.log(target[i]);
-                                                        console.log(COLORS[class_to_color_idx[target[i].className]]);
-                                                        target[i].style.outline = '2px solid ' + rgb2hex("rgb" + COLORS[class_to_color_idx[target[i].className]]);
+                                                        // console.log(target[i][0], target[i][1]);
+                                                        target[i][0].style.outline = '2px solid ' + rgb2hex(target[i][1]);
                                                     }
-                                                    console.log(collected_data);
+                                                    // console.log(collected_data);
                                                 });
                                             }
-
                                             // $xpath = data.msg;
                                             // $xpath = JSON.parse($xpath);
                                             // let temp;
@@ -318,12 +397,13 @@ $(document).ready(function() {
                                     // if($username !== undefined) {
                                     //     port.postMessage({answer: "leave", username: $username, domain_name: location.hostname});
                                     // }
-                                    chrome.storage.sync.get("value", function(items) {
-                                        if (!chrome.runtime.error) {
-                                            let array = items["value"];
-                                            port.postMessage({answer: "leave", domain_name: location.hostname, capa: array});
-                                        }
-                                    });
+                                    port.postMessage({answer: "exit", domain_name: location.href});
+                                    // chrome.storage.sync.get("value", function(items) {
+                                    //     if (!chrome.runtime.error) {
+                                    //         let array = items["value"];
+                                    //         port.postMessage({answer: "leave", domain_name: location.href, capa: array});
+                                    //     }
+                                    // });
                                 };
 
                                 ContentFrame.findElementInContentFrame('#userForm','#webview-query').submit(function(e){
@@ -336,7 +416,7 @@ $(document).ready(function() {
                                     }
                                     else if(login === false){
                                         // socket.emit('new user', {username: $username, domain_name: location.hostname});
-                                        port.postMessage({answer: "new user", username: $username, domain_name: location.hostname});
+                                        port.postMessage({answer: "new user", username: $username, domain_name: location.href});
                                         // ContentFrame.findElementInContentFrame('#username','#webview-query').val('');
                                         login_html = $.parseHTML('<input style="width: 200px; font-weight: 600; overflow: hidden;  display: inline-block; background-color: #0bbd27" class="form-control" id="username" value="Logged In as: '+$username+'"/>');
                                         ContentFrame.findElementInContentFrame('#username','#webview-query').replaceWith(login_html);
@@ -370,7 +450,15 @@ $(document).ready(function() {
                                         ContentFrame.findElementInContentFrame('#username','#webview-query').replaceWith(login_html);
                                     }
                                     else {
-                                        query_dom_element = modifyDOM();
+
+
+                                        var modified_dom = modifyDOM();
+                                        var query_dom_element = [];
+                                        for (var key in Object.keys(modified_dom['idMapDomSerial'])) {
+                                            query_dom_element.push(modified_dom['idMapDomSerial'][key]);
+                                        }
+
+                                        // query_dom_element = modifyDOM();
                                         $messageDesc = ContentFrame.findElementInContentFrame('#messageDesc', '#webview-query').val();
                                         $messageName = ContentFrame.findElementInContentFrame('#messageName', '#webview-query').val();
                                         port.postMessage({answer: "send message by desc", username: $username, message: $messageDesc, name: $messageName, domain_name: location.href, query_dom_element: query_dom_element});

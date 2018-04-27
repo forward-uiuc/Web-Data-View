@@ -160,8 +160,8 @@ function tabController(tabId, tabAction, callback) {
      */
 
 chrome.runtime.onConnect.addListener(function(port) {
-    socket = io.connect('http://127.0.0.1:5353/');
-    // socket = io.connect('http://kite.cs.illinois.edu:5355/');
+    // socket = io.connect('http://127.0.0.1:5353/');
+    socket = io.connect('http://kite.cs.illinois.edu:5355/');
     // socket.emit('new user', {username: "Herbert", domain_name: "www.amazon.com"});
     port.onMessage.addListener(function(msg) {
         if (msg.answer == "new user"){
@@ -180,6 +180,10 @@ chrome.runtime.onConnect.addListener(function(port) {
             console.log("leave reached!!!");
             console.log(msg.capa);
             socket.emit('leave', {domain_name: msg.domain_name, capacity: msg.capa});
+        }
+        else if (msg.answer == "exit"){
+            console.log("exit reached!!!");
+            socket.emit('exit', {domain_name: msg.domain_name});
         }
         else if (msg.answer == "pre check"){
             console.log("Pre check point!!!");   // Send domain to server and return stored result!
