@@ -50,7 +50,8 @@
         "lib/mousetrap.min.js",
         "lib/jquery/jquery.scrollstop.min.js",
         "lib/popper/popper.js",
-        "lib/socket.io.js"
+        "lib/socket.io.js",
+        "app/contentScript/webView/tooltip.js"
 //        "lib/bootstrap/js/bootstrap.3.3.7.min.js",
 //        "lib/bootstrap/js/bootstrap.min.js"
       ],
