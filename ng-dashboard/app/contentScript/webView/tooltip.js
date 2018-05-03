@@ -659,8 +659,8 @@ function selectionHandler(event) {
     }
     selected_nodes.push(event.target);
     tooltip_node = event.target;
-    event.target.style.outline = '3px dotted ' + tooltip_color;
-    tooltip_node.style['outline-offset'] = '-3px';
+    event.target.style.outline = '2px dotted ' + tooltip_color;
+    tooltip_node.style['outline-offset'] = '-2px';
     let field_label = ntc.name(rgb2hex(tooltip_color))[1];
     let data_to_push = {};
     data_to_push[field_label] = event_target;

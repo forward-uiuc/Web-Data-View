@@ -102,6 +102,7 @@ class Query {
                 let element = matches[i];
                 if (typeof element != 'undefined') {
                     element.style.outline = '2px dotted ' + color;
+                    element.style['outline-offset'] = '-2px';
                 }
             }
         }
@@ -116,6 +117,7 @@ class Query {
             let element = matches[i];
             if (typeof element != 'undefined') {
                 element.style.outline = '2px solid ' + color;
+                element.style['outline-offset'] = '-2px';
             }
         }
     }
@@ -126,6 +128,7 @@ class Query {
             let element = matches[i];
             if (typeof element != 'undefined') {
                 element.style.outline = 'none';
+                element.style['outline-offset'] = none;
             }
         }
     }
@@ -136,6 +139,7 @@ class Query {
             let element = matches[i];
             if (typeof element != 'undefined') {
                 element.style.outline = "none";
+                element.style['outline-offset'] = none;
             }
         }
     }
