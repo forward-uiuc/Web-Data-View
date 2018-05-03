@@ -37,6 +37,14 @@ let click_flag = false;
 let port = chrome.runtime.connect({name: "knockknock"});
 // port.postMessage({answer: "pre check", domain_name: location.href});
 setTimeout(function(){port.postMessage({answer: "pre check", domain_name: location.href});}, 1000);
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.greeting == "toggled"){
+            $('#webview-query').toggle();
+            $('#webdataview-floating-widget').toggle();
+        }
+    });
+
 class TestTooltip {
     constructor(referenceElement, color) {
         self.instance = new Tooltip(referenceElement, {
@@ -52,13 +60,13 @@ class TestTooltip {
             'appendTo': '#webview-popper-container',
             'css': ['lib/font-awesome/css/font-awesome.css', 'lib/bootstrap/css/bootstrap.3.3.7.min.css'],
             'js': ['app/contentScript/webView/tooltipHandler.js'],
-            'inlineCss':  {"width": "140px", "height": "40px", "z-index": 2147483640, "border": "none", "border-radius": 6, "overflow": "visible"}
+            'inlineCss':  {"width": "90px", "height": "40px", "z-index": 2147483640, "border": "none", "border-radius": 6, "overflow": "visible", "display": "display"}
     });
         let tooltip_html = $.parseHTML('<div class="webdataview" id="webdataview_id" style="background-color: ' + color + '; width: 100%; height: auto; overflow: visible; z-index: 2147483647 !important; ">' +
             // '<i class="fa fa-tag fa-fw-lg" id="web-view-assign-label" style="margin-left: 15px"></i> ' +
-            '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar" style="color: black;"></i>' +
-            '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove"  style="color: black;"></i>' +
-            '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle"  style="color: black; font-weight: 100;"></i>' +
+            // '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar" style="color: black;"></i>' +
+            '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove"  style="color: black;" title="Delete"></i>' +
+            '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle"  style="color: black; font-weight: 100;" title="Select Capabilities"></i>' +
             '<br><div id="cap_target" style="display: none;">' +
             '<input type="checkbox" id="filter_class" name="subscribe" value="0">'+
             '<label for="subscr ibeNews">Filter by ClassName</label>' +
@@ -187,7 +195,7 @@ class TestTooltip {
             } else {
                 x.style.display = "none";
                 $("#webview-tooltip")[0].style.height = "40px";
-                $("#webview-tooltip")[0].style.width = "140px";
+                $("#webview-tooltip")[0].style.width = "90px";
 
             }
         });
@@ -425,8 +433,17 @@ class TestTooltip {
         });
 
         ContentFrame.findElementInContentFrame('#web-view-remove', '#webview-tooltip').click(function(e) {
-            helper(referenceElement, cur_query, 1);
-            self.instance.hide();
+            e.preventDefault();
+            $('#webview-popper-container').remove();
+            referenceElement.style.outline = null;
+            let new_collect = [];
+            for (let j=0; j < collected_data.length; j++) {
+                let kval = Object.values(collected_data[j])[0];
+                if(kval !== referenceElement){
+                    new_collect.push(collected_data[j]);
+                }
+            }
+            collected_data = new_collect;
         });
         // assign
         ContentFrame.findElementInContentFrame('#web-view-assign-label', '#webview-tooltip').click(function() {
@@ -451,9 +468,9 @@ class TestTooltip {
                     appendLabel2Widget(assigned_color_label_name, assigned_color_label_name);
                 }
                 let tooltip_html = $.parseHTML('<div class="webdataview" style="background-color: ' + assigned_color + '; width: 100%; height: 100%">' +
-                    '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar"></i>' +
-                    '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove"></i>' +
-                    '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle"></i>' +
+                    // '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar"></i>' +
+                    '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove" title="Delete"></i>' +
+                    '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle" title="Select Capabilities"></i>' +
                     '</div>');
                 cf.iframe.css({"height":"40px"});
                 cf.body.empty();
@@ -500,7 +517,8 @@ let alignSelectionWithClusterClassFlag = false;
 let used_col_idx = 0;
 let class_to_color_idx = {};
 
-let TOOLTIP_IDS_ARRAY = ["web-view-select-similar", "web-view-remove"];
+// let TOOLTIP_IDS_ARRAY = ["web-view-select-similar", "web-view-remove"];
+let TOOLTIP_IDS_ARRAY = ["web-view-remove"];
 let prev;
 document.addEventListener("click", selectionHandler, true);
 
@@ -528,7 +546,7 @@ function greeting(name) {
         hover_message = hover_message + name.css("color");
         hover_message = hover_message + "\n";
     }
-    name.prop('title', hover_message);
+    // name.prop('title', hover_message);
 }
 
 function doWhenEnterDOM(node, count) {
@@ -843,7 +861,7 @@ let appendbox = [];
             'css': ['lib/font-awesome/css/font-awesome.css'],
             'js': ['app/contentScript/webView/label_delete.js'],
             'inlineCss': {"width": "200px", "height": "165px", "border": "none", "border-radius": 6,
-                "margin-top": "60px", "background-color": "black"}
+                "margin-top": "60px", "background-color": "black",  "position": "fixed", "z-index": 2147483647, "overflow-y": "hidden"}
         });
         let tooltip_html = $.parseHTML('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">' +
             '<div>' +
