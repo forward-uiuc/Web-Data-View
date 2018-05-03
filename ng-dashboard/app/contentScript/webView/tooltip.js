@@ -627,16 +627,16 @@ function selectionHandler(event) {
     $('#webview-popper-container').remove();
 
     let tooltip_color;
-    if (event.target.className in class_to_color_idx) {
-        tooltip_color = "rgb" + COLORS[class_to_color_idx[event.target.className]];
-    }
+    // if (event.target.className in class_to_color_idx) {
+    //     tooltip_color = "rgb" + COLORS[class_to_color_idx[event.target.className]];
+    // }
     // else {
     //     tooltip_color = "rgb" + COLORS[used_col_idx];
     //     class_to_color_idx[event.target.className] = used_col_idx;
     //     used_col_idx = used_col_idx + 1;
     //     appendLabel2Widget(ntc.name(rgb2hex(tooltip_color))[1], tooltip_color);
     // }
-    else {
+    // else {
         if(!click_flag){ //first time click
             click_flag = true;
             class_to_color_idx[event.target.className] = used_col_idx;
@@ -647,7 +647,7 @@ function selectionHandler(event) {
         else{
             tooltip_color = "rgb" + COLORS[used_col_idx-1];
         }
-    }
+    // }
     cccccc = tooltip_color;
     let tip = new TestTooltip(event.target, tooltip_color);
 
@@ -866,10 +866,10 @@ let appendbox = [];
         ContentFrame.findElementInContentFrame('#label_delete', '#'+labelId).click(function(e) {
             $(current.target).hide();
             for(d = 0; d < apply_array.length; d++) {
-                console.log(apply_array[d]);
                 apply_array[d].style.outline = null;
             }
             apply_array = [];
+            click_flag = false;
             $('#webview-popper-container').remove();
             ContentFrame.findElementInContentFrame('#' + e.target.id, '#'+labelId).hide();
             for(i = 0; i < labels_list.length; i++){
