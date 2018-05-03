@@ -643,7 +643,7 @@ $('*').hover(
     //console.log(tooltip_node);
     //event.target.style.outline = '3px dotted ' + tooltip_color;
     tooltip_node.style.outline = '3px dotted ' + tooltip_color;
-    tooltip_node.style.position = 'absolute'
+    tooltip_node.style['outline-offset'] = '-3px';
     // event.target.style.zIndex = "3000";
     // event.target.style.position = "relative";
     let field_label = ntc.name(rgb2hex(tooltip_color))[1];
