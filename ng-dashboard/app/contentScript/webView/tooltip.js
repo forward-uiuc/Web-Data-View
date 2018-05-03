@@ -649,7 +649,7 @@ function selectionHandler(event) {
         }
     }
     cccccc = tooltip_color;
-
+    let tip = new TestTooltip(event.target, tooltip_color);
 
     if (!tooltip_node || event.target.className != tooltip_node.className) {
         for (let i = 0; i < selected_nodes.length; i++) {
@@ -660,9 +660,7 @@ function selectionHandler(event) {
     selected_nodes.push(event.target);
     tooltip_node = event.target;
     event.target.style.outline = '3px dotted ' + tooltip_color;
-    // tooltip_node.style.position = 'absolute';
-    // event.target.style.zIndex = "3000";
-    // event.target.style.position = "relative";
+    tooltip_node.style['outline-offset'] = '-3px';
     let field_label = ntc.name(rgb2hex(tooltip_color))[1];
     let data_to_push = {};
     data_to_push[field_label] = event_target;
