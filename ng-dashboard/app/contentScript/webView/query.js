@@ -120,7 +120,7 @@ $(document).ready(function() {
                                 },function(){
                                     if($visib.is(":visible")){
                                         $('#webview-query').css('height','330');
-                                        $('#webview-query').css('width','25%');
+                                        $('#webview-query').css('width','35%');
                                         ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').css('height', '140px');
                                     }
                                 });
