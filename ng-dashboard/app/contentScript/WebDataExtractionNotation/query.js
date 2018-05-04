@@ -32,12 +32,16 @@ class Query {
     constructor(query) {
         if (query.jQuerySelector) {
             this.jQuerySelector = query.jQuerySelector;
+        } else {
+            this.jQuerySelector = {}
         }
         if (query.class) {
             this.class = query.class;
         }
         if (query.css) {
             this.css = query.css;
+        } else {
+            this.css = {}
         }
 
         this.attrs = ["class", "id", "tag", "XPath", "jQuerySelector", "css", "RegExp", "contains", "position", "function", "bool"];
@@ -61,10 +65,14 @@ class Query {
             if (!matches) {
                 matches = $("*");
             }
-            matches = matches.filter(this.jQuerySelector);
+            // matches = matches.filter(this.jQuerySelector);
+            let selectors = this.jQuerySelector;
+            for (let x in selectors) {
+                matches = matches.filter(selectors[x]);
+            }
         }
 
-        if (this.css) {
+        if (this.css && !jQuery.isEmptyObject(this.css)) {
             if (!matches) {
                 matches = $("*");
             }
@@ -73,6 +81,7 @@ class Query {
                 let retVal = false;
                 let firstProp = true;
                 for (let prop in queryCSS) {
+                    console.log(prop);
                     if (firstProp) {
                         firstProp = false;
                         retVal = true;

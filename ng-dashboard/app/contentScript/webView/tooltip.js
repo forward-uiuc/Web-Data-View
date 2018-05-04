@@ -84,8 +84,10 @@ class TestTooltip {
             '<label for="subscribeNews">Filter by Font-weight</label>' +
             // '<br><input type="checkbox" id="filter_child" name="subscribe" value="0">' +
             // '<label for="subscribeNews">Remove Parent Element</label>' +
-            '<br><input type="checkbox" id="filter_left" name="subscribe" value="0">'+
-            '<label for="subscribeNews">Align Left</label>' +
+            '<br><input type="checkbox" id="filter_width" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Width</label>' +
+            '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Height</label>' +
             // '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
             // '<label for="subscribeNews">Filter by Height</label>' +
             // '<br><input type="checkbox" id="filter_width" name="subscribe" value="0">'+
@@ -309,7 +311,8 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_fontsize");
                 let target_font = jQuery(referenceElement).css("font-size");
-                cur_query.css = {"fontSize": target_font};
+                // cur_query.css = {"fontSize": target_font};
+                cur_query.css["fontSize"]= target_font;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
@@ -331,7 +334,8 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_fontcolor");
                 let target_fontcolor = jQuery(referenceElement).css("color");
-                cur_query.css = {"color": target_fontcolor};
+                // cur_query.css = {"color": target_fontcolor};
+                cur_query.css["color"] = target_fontcolor;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
@@ -353,7 +357,7 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_backcolor");
                 let target_backcolor = jQuery(referenceElement).css("background-color");
-                cur_query.css = {"background-color": target_backcolor};
+                cur_query.css["background-color"]= target_backcolor;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
@@ -375,7 +379,8 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_style");
                 let target_style = jQuery(referenceElement).css("font-style");
-                cur_query.css = {"font-style": target_style};
+                // cur_query.css = {"font-style": target_style};
+                cur_query.css["font-style"]=target_style;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
@@ -397,13 +402,51 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_weight");
                 let target_weight = jQuery(referenceElement).css("font-weight");
-                cur_query.css = {"font-weight": target_weight};
+                cur_query.css["font-weight"]= target_weight;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
                 cur.value = "0";
                 mySet.delete("filter_weight");
                 delete cur_query.css["font-weight"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_width', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_width");
+                let target_width = jQuery(referenceElement).width();
+                cur_query.jQuerySelector["width"] = function() {
+                    return Math.abs($(this).width() - target_width) < 2;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_width");
+                delete cur_query.jQuerySelector["width"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_height', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_height");
+                let target_height = jQuery(referenceElement).height();
+                cur_query.jQuerySelector["height"] = function() {
+                    return Math.abs($(this).height() - target_height) < 2;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_height");
+                delete cur_query.jQuerySelector["height"];
                 helper(referenceElement, cur_query, 1);
             }
         });
