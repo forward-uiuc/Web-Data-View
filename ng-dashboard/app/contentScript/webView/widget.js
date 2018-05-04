@@ -140,6 +140,9 @@ $(document).ready(function(){
                         let record_dom = [];
                         let non_record = [];
                         select_apply.click(function(e){
+                            // Long's addition
+                            $('#webview-popper-container').remove();
+                            // End Long's addition
                             e.preventDefault();
                             mySet.clear();
                             click_flag = false;

@@ -593,6 +593,10 @@ function greeting(name) {
 }
 
 function doWhenEnterDOM(node, count) {
+    // Should not be able to select menus
+    if (node.closest('#webdataview-widget-container').length) return;
+    // Should not enter a node if it is already selected, which 
+    // happens when moving mouse too fast
     if (node.data('wdv_original')===undefined) {
         // if ($.now() % 5 == 0) { // use it to reduce cost
         //     removeAllSelections(); //pretty expensive
@@ -608,6 +612,7 @@ function doWhenEnterDOM(node, count) {
 }
 
 function doWhenExitDOM(node, count) {
+    if (node.closest('#webdataview-widget-container').length) return;
     if (node.data('wdv_original')!==undefined) {
         node.prop('title', node.data('wdv_original')['title']);
         node.css('border', node.data('wdv_original')['border']);
@@ -648,6 +653,7 @@ $('*').hover(
 );
 
 function selectionHandler(event) {
+    if ($(event.target).closest('#webdataview-widget-container').length) return;
     event.preventDefault();
     event.stopPropagation();
     mySet.clear();

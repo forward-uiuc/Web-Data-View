@@ -81,7 +81,6 @@ class Query {
                 let retVal = false;
                 let firstProp = true;
                 for (let prop in queryCSS) {
-                    console.log(prop);
                     if (firstProp) {
                         firstProp = false;
                         retVal = true;
