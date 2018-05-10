@@ -35,10 +35,10 @@ Our solution creates data view, which allows users to interact with web pages as
 * Use URL to match intents with web pages
 
 ## To install
-Open Chrome and type chrome://extensions/ in the URL box. Download and draf crx file in the most recent release to the page you have just openned. Open a page like https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=laptop and click on our Chrome Extension button.
+Open Chrome and type chrome://extensions/ in the URL box. Download and drag the crx file in the most recent release to the page you have just openned. Open a page like https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=laptop and click on our Chrome Extension button.
 
 ## To make change to the code
-Check out the code. And then load folder ng-dashboard you have just downloaded asan  unpacked Chrome extension following the following instruction: https://support.google.com/chrome/a/answer/2714278?hl=en. Please note that whenever you make a change on the code, you need to reload it on chrome://extensions/ to see the difference.
+Check out the code. And then load folder ng-dashboard you have just downloaded as an unpacked Chrome extension following the instruction: https://support.google.com/chrome/a/answer/2714278?hl=en. Please note that whenever you make a change on the code, you need to reload the unpacked extension on chrome://extensions/ for the change to take effect.
 
 ## Potential improvements
 * Makes selecting data value samples easily by smart segmentation
