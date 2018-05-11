@@ -72,6 +72,8 @@ class TestTooltip {
             '<label for="subscr ibeNews">Filter by ClassName</label>' +
             '<br><input type="checkbox" id="filter_id" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Id</label>' +
+            '<br><input type="checkbox" id="filter_tag" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Tag name</label>' +
             '<br><input type="checkbox" id="filter_fontsize" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Fontsize</label>' +
             '<br><input type="checkbox" id="filter_fontcolor" name="subscribe" value="0">'+
@@ -302,6 +304,31 @@ class TestTooltip {
                 cur.value = "0";
                 mySet.delete("filter_id");
                 cur_query.id = false;
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_tag', '#webview-tooltip').click(function(e) {
+            if(jQuery(referenceElement).css("font-size") === '' || jQuery(referenceElement).css("font-size") === undefined ){
+                alert("This element has no Font-Size attribute!");
+                ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').attr("disabled","true");
+                return;
+            }
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_tag");
+                let target_tag = referenceElement.tagName;
+                // cur_query.css = {"fontSize": target_font};
+                cur_query.jQuerySelector["tagName"] = function() {
+                    return this.tagName === target_tag;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_tag");
+                delete cur_query.jQuerySelector["tagName"];
                 helper(referenceElement, cur_query, 1);
             }
         });
@@ -703,7 +730,7 @@ function removeAllSelections() {
 
 $('*').hover(
     function(e){
-        console.log(e.target);
+        //console.log(e.target);
         // The condition is to prevent the case when moving the mouse too fast
         // that it re-enters the element before finishing the previous entering
         doWhenEnterDOM($(this),0);
