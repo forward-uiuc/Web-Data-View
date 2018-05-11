@@ -502,11 +502,16 @@ class TestTooltip {
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
                 mySet.add("filter_suffix");
-                let target_suffix = jQuery(referenceElement).text().split(' ').splice(-ContentFrame.findElementInContentFrame('#filter_suffix_num', '#webview-tooltip').val()).join(' ');
-                console.log(target_suffix);
+                let txt = jQuery(referenceElement).text().trim();
+                let target_suffix = txt.split(' ').splice(-ContentFrame.findElementInContentFrame('#filter_suffix_num', '#webview-tooltip').val()).join(' ');
+
+                console.log(txt.lastIndexOf(target_suffix));
+                console.log(txt.length);
                 // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
                 cur_query.jQuerySelector["filter_suffix"] = function() {
-                    return $(this).text().lastIndexOf(target_suffix) >0 && $(this).text().lastIndexOf(target_suffix) > -1;
+                    let cur_txt = $(this).text().trim()
+                    let idx = cur_txt.lastIndexOf(target_suffix);
+                    return (idx > 0 && cur_txt.length - idx === target_suffix.length);
                 };
                 helper(referenceElement, cur_query, 0);
             }
