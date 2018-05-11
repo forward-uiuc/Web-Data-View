@@ -26,11 +26,11 @@ Our solution creates data view, which allows users to interact with web pages as
 
 ## Insights
 * The key to avoid conflicts is to isolate javascript and css of web pages and Chrome extension
-* User input is very powerful for instantiating generic model for specific web page. For example, we may know generic rule "same title field same class names". However, it is useless without knowing exactly which classnames they share. A single "click" from users can tell us which class names.
+* User input is very powerful for instantiating generic model for specific web page. For example, we may know generic rule "same title field same class names". However, it is useless without knowing exactly which classnames they share. Fortunately, a single "click" from users can tell us which class names
 * Web pages can be grouped into categories where corresponding intents are likely to match
 
 ## Current solution
-* Use contentframe to isolate css. Chrome extension isolates javascript for us by default.
+* Use contentframe to isolate css. Chrome extension isolates javascript for us by default
 * Allow users to select predefined generic descriptive rules, and visually choose one value sample to instantiate the rules.
 * Use URL to match intents with web pages
 
@@ -44,3 +44,5 @@ After making changes to the code, you need to reload the unpacked extension on [
 * Makes selecting data value samples easily by smart segmentation
 * Allows users to descriptive queries, which are more robust against changes than classnames
 * ???
+
+This software is developed at [Forward@UIUC Group](http://forwarddatalab.org/kevinchang)
