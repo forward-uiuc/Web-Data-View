@@ -504,9 +504,8 @@ class TestTooltip {
                 mySet.add("filter_suffix");
                 let txt = jQuery(referenceElement).text().trim();
                 let target_suffix = txt.split(' ').splice(-ContentFrame.findElementInContentFrame('#filter_suffix_num', '#webview-tooltip').val()).join(' ');
-
-                console.log(txt.lastIndexOf(target_suffix));
-                console.log(txt.length);
+                // console.log(txt.lastIndexOf(target_suffix));
+                // console.log(txt.length);
                 // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
                 cur_query.jQuerySelector["filter_suffix"] = function() {
                     let cur_txt = $(this).text().trim()
@@ -674,8 +673,8 @@ function doWhenEnterDOM(node, count) {
         //     removeAllSelections(); //pretty expensive
         // }
         removeAllSelections(); //pretty expensive, use the method above to reduce cost
-        node.data('wdv_original',{title:node.prop('title'),border:node.css('border')});
-        node.css('border', '1px dotted black');
+        node.data('wdv_original',{title:node.prop('title'),outline:node.css('outline')});
+        node.css('outline', '1px dotted black');
         greeting(node);
     }
     // else if (count < 10) {
@@ -687,7 +686,7 @@ function doWhenExitDOM(node, count) {
     if (node.closest('#webdataview-widget-container').length) return;
     if (node.data('wdv_original')!==undefined) {
         node.prop('title', node.data('wdv_original')['title']);
-        node.css('border', node.data('wdv_original')['border']);
+        node.css('outline', node.data('wdv_original')['outline']);
         node.removeData('wdv_original');
     }
     // else if (count < 10) {
@@ -704,6 +703,7 @@ function removeAllSelections() {
 
 $('*').hover(
     function(e){
+        console.log(e.target);
         // The condition is to prevent the case when moving the mouse too fast
         // that it re-enters the element before finishing the previous entering
         doWhenEnterDOM($(this),0);
