@@ -70,6 +70,8 @@ class TestTooltip {
             '<br><div id="cap_target" style="display: none;">' +
             '<input type="checkbox" id="filter_class" name="subscribe" value="0">'+
             '<label for="subscr ibeNews">Filter by ClassName</label>' +
+            '<input type="checkbox" id="filter_ancesstor_class" name="subscribe" value="0">'+
+            '<label for="subscr ibeNews">Filter by AncestorClass</label>' +
             '<br><input type="checkbox" id="filter_id" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Id</label>' +
             '<br><input type="checkbox" id="filter_tag" name="subscribe" value="0">'+
@@ -284,6 +286,42 @@ class TestTooltip {
             }
         });
 
+        ContentFrame.findElementInContentFrame('#filter_ancesstor_class', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_ancesstor_class");
+                let prs = $(referenceElement).parents();
+                let target_tag = "";
+                for (let i = 0; i < prs.length; i++) {
+                    if (prs[i].className != undefined) {
+                        target_tag = prs[i].className;
+                        break;
+                    }
+                }
+                // console.log(target_tag);
+                // cur_query.css = {"fontSize": target_font};
+                cur_query.jQuerySelector["ancesstor_class"] = function() {
+                    let cur_prs = $(this).parents();
+                    let cur_tag = "";
+                    for (let i = 0; i < cur_prs.length; i++) {
+                        if (cur_prs[i].className != undefined) {
+                            cur_tag = cur_prs[i].className;
+                            break;
+                        }
+                    }
+                    return cur_tag === target_tag;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_ancesstor_class");
+                delete cur_query.jQuerySelector["ancesstor_class"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
         ContentFrame.findElementInContentFrame('#filter_id', '#webview-tooltip').click(function(e) {
             if(referenceElement.id === '' || referenceElement.id === undefined ){
                 alert("This element has no Id attribute!");
@@ -309,11 +347,6 @@ class TestTooltip {
         });
 
         ContentFrame.findElementInContentFrame('#filter_tag', '#webview-tooltip').click(function(e) {
-            if(jQuery(referenceElement).css("font-size") === '' || jQuery(referenceElement).css("font-size") === undefined ){
-                alert("This element has no Font-Size attribute!");
-                ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
