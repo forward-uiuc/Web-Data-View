@@ -53,7 +53,7 @@ class Query {
     execute() {
         let matches = undefined;
 
-        if (this.class) {
+        if (this.class  && !jQuery.isEmptyObject(this.class)) {
             if (!matches) {
                 matches = $("*");
             }
@@ -61,7 +61,7 @@ class Query {
             matches = matches.filter(classjQuerySelector);
         }
 
-        if (this.jQuerySelector) {
+        if (this.jQuerySelector && !jQuery.isEmptyObject(this.jQuerySelector)) {
             if (!matches) {
                 matches = $("*");
             }

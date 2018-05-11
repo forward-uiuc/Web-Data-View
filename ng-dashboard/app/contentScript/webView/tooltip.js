@@ -92,6 +92,8 @@ class TestTooltip {
             '<label for="subscribeNews">Filter by Left Alignment</label>' +
             '<br><input type="checkbox" id="filter_prefix" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Prefix </label> <select id="filter_prefix_num" value="1"><option value="1">1</option><option value="2">2</option> <option value="3">3</option><option value="4">4</option></select>' +
+            '<br><input type="checkbox" id="filter_suffix" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Suffix </label> <select id="filter_suffix_num" value="1"><option value="1">1</option><option value="2">2</option> <option value="3">3</option><option value="4">4</option></select>' +
             // '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
             // '<label for="subscribeNews">Filter by Height</label>' +
             // '<br><input type="checkbox" id="filter_width" name="subscribe" value="0">'+
@@ -491,6 +493,27 @@ class TestTooltip {
                 cur.value = "0";
                 mySet.delete("filter_prefix");
                 delete cur_query.jQuerySelector["filter_prefix"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_suffix', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_suffix");
+                let target_suffix = jQuery(referenceElement).text().split(' ').splice(-ContentFrame.findElementInContentFrame('#filter_suffix_num', '#webview-tooltip').val()).join(' ');
+                console.log(target_suffix);
+                // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
+                cur_query.jQuerySelector["filter_suffix"] = function() {
+                    return $(this).text().lastIndexOf(target_suffix) >0 && $(this).text().lastIndexOf(target_suffix) > -1;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_suffix");
+                delete cur_query.jQuerySelector["filter_suffix"];
                 helper(referenceElement, cur_query, 1);
             }
         });
