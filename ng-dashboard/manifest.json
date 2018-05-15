@@ -1,10 +1,14 @@
 {
   "manifest_version": 2,
-  "name"            : "Clip",
+  "name"            : "Web-Data-View",
   "description"     : "Copy-Paste Data from Web pages",
-  "short_name"      : "Clip",
-  "version"         : "0.1",
-
+  "short_name"      : "Web-Data-View",
+  "version"         : "0.2",
+  "icons": { "16" : "assets/logo/logo_grayscale_16.png",
+    "19" : "assets/logo/logo_grayscale_19.png",
+    "38" : "assets/logo/logo_grayscale_38.png",
+    "48" : "assets/logo/logo_color_48.png",
+    "128": "assets/logo/logo_color_128.png"},
   "browser_action" : {
     "default_icon"  : {
       "16" : "assets/logo/logo_grayscale_16.png",
@@ -66,11 +70,15 @@
   ],
 
   "commands": {
-    "_execute_browser_action": {
+    "close_panels": {
       "suggested_key": {
-        "default": "Ctrl+E",
-        "mac": "Command+E"
-      }
+        "default": "Ctrl+Shift+Z",
+        "windows": "Ctrl+Shift+Z",
+        "mac": "Command+Shift+Z",
+        "chromeos": "Ctrl+Shift+Z",
+        "linux": "Ctrl+Shift+Z"
+      },
+      "description": "Close All Panels"
     }
   }
 }

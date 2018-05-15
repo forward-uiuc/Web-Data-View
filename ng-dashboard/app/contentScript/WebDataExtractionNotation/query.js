@@ -32,12 +32,16 @@ class Query {
     constructor(query) {
         if (query.jQuerySelector) {
             this.jQuerySelector = query.jQuerySelector;
+        } else {
+            this.jQuerySelector = {}
         }
         if (query.class) {
             this.class = query.class;
         }
         if (query.css) {
             this.css = query.css;
+        } else {
+            this.css = {}
         }
 
         this.attrs = ["class", "id", "tag", "XPath", "jQuerySelector", "css", "RegExp", "contains", "position", "function", "bool"];
@@ -61,10 +65,14 @@ class Query {
             if (!matches) {
                 matches = $("*");
             }
-            matches = matches.filter(this.jQuerySelector);
+            // matches = matches.filter(this.jQuerySelector);
+            let selectors = this.jQuerySelector;
+            for (let x in selectors) {
+                matches = matches.filter(selectors[x]);
+            }
         }
 
-        if (this.css) {
+        if (this.css && !jQuery.isEmptyObject(this.css)) {
             if (!matches) {
                 matches = $("*");
             }
@@ -102,6 +110,7 @@ class Query {
                 let element = matches[i];
                 if (typeof element != 'undefined') {
                     element.style.outline = '2px dotted ' + color;
+                    element.style['outline-offset'] = '-2px';
                 }
             }
         }
@@ -116,6 +125,7 @@ class Query {
             let element = matches[i];
             if (typeof element != 'undefined') {
                 element.style.outline = '2px solid ' + color;
+                element.style['outline-offset'] = '-2px';
             }
         }
     }
@@ -126,6 +136,7 @@ class Query {
             let element = matches[i];
             if (typeof element != 'undefined') {
                 element.style.outline = 'none';
+                element.style['outline-offset'] = 'none';
             }
         }
     }
@@ -136,6 +147,7 @@ class Query {
             let element = matches[i];
             if (typeof element != 'undefined') {
                 element.style.outline = "none";
+                element.style['outline-offset'] = 'none';
             }
         }
     }

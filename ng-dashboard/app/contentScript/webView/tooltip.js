@@ -37,6 +37,14 @@ let click_flag = false;
 let port = chrome.runtime.connect({name: "knockknock"});
 // port.postMessage({answer: "pre check", domain_name: location.href});
 setTimeout(function(){port.postMessage({answer: "pre check", domain_name: location.href});}, 1000);
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.greeting == "toggled"){
+            $('#webview-query').toggle();
+            $('#webdataview-floating-widget').toggle();
+        }
+    });
+
 class TestTooltip {
     constructor(referenceElement, color) {
         self.instance = new Tooltip(referenceElement, {
@@ -52,13 +60,13 @@ class TestTooltip {
             'appendTo': '#webview-popper-container',
             'css': ['lib/font-awesome/css/font-awesome.css', 'lib/bootstrap/css/bootstrap.3.3.7.min.css'],
             'js': ['app/contentScript/webView/tooltipHandler.js'],
-            'inlineCss':  {"width": "140px", "height": "40px", "z-index": 2147483640, "border": "none", "border-radius": 6, "overflow": "visible"}
+            'inlineCss':  {"width": "90px", "height": "40px", "z-index": 2147483640, "border": "none", "border-radius": 6, "overflow": "visible", "display": "display"}
     });
         let tooltip_html = $.parseHTML('<div class="webdataview" id="webdataview_id" style="background-color: ' + color + '; width: 100%; height: auto; overflow: visible; z-index: 2147483647 !important; ">' +
             // '<i class="fa fa-tag fa-fw-lg" id="web-view-assign-label" style="margin-left: 15px"></i> ' +
-            '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar" style="color: black;"></i>' +
-            '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove"  style="color: black;"></i>' +
-            '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle"  style="color: black; font-weight: 100;"></i>' +
+            // '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar" style="color: black;"></i>' +
+            '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove"  style="color: black;" title="Delete"></i>' +
+            '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle"  style="color: black; font-weight: 100;" title="Select Capabilities"></i>' +
             '<br><div id="cap_target" style="display: none;">' +
             '<input type="checkbox" id="filter_class" name="subscribe" value="0">'+
             '<label for="subscr ibeNews">Filter by ClassName</label>' +
@@ -69,15 +77,21 @@ class TestTooltip {
             '<br><input type="checkbox" id="filter_fontcolor" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Fontcolor</label>' +
             '<br><input type="checkbox" id="filter_backcolor" name="subscribe" value="0">'+
-            '<label for="subscribeNews">Filter by Background-color</label>' +
+            '<label for="subscribeNews">Filter by Bg-color</label>' +
             '<br><input type="checkbox" id="filter_style" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Font-style</label>' +
             '<br><input type="checkbox" id="filter_weight" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Font-weight</label>' +
             // '<br><input type="checkbox" id="filter_child" name="subscribe" value="0">' +
             // '<label for="subscribeNews">Remove Parent Element</label>' +
-            '<br><input type="checkbox" id="filter_left" name="subscribe" value="0">'+
-            '<label for="subscribeNews">Align Left</label>' +
+            '<br><input type="checkbox" id="filter_width" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Width</label>' +
+            '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Height</label>' +
+            '<br><input type="checkbox" id="filter_alignleft" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Left Alignment</label>' +
+            '<br><input type="checkbox" id="filter_prefix" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Prefix </label> <select id="filter_prefix_num" value="1"><option value="1">1</option><option value="2">2</option> <option value="3">3</option><option value="4">4</option></select>' +
             // '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
             // '<label for="subscribeNews">Filter by Height</label>' +
             // '<br><input type="checkbox" id="filter_width" name="subscribe" value="0">'+
@@ -187,7 +201,7 @@ class TestTooltip {
             } else {
                 x.style.display = "none";
                 $("#webview-tooltip")[0].style.height = "40px";
-                $("#webview-tooltip")[0].style.width = "140px";
+                $("#webview-tooltip")[0].style.width = "90px";
 
             }
         });
@@ -301,7 +315,8 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_fontsize");
                 let target_font = jQuery(referenceElement).css("font-size");
-                cur_query.css = {"fontSize": target_font};
+                // cur_query.css = {"fontSize": target_font};
+                cur_query.css["fontSize"]= target_font;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
@@ -323,7 +338,8 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_fontcolor");
                 let target_fontcolor = jQuery(referenceElement).css("color");
-                cur_query.css = {"color": target_fontcolor};
+                // cur_query.css = {"color": target_fontcolor};
+                cur_query.css["color"] = target_fontcolor;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
@@ -345,7 +361,7 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_backcolor");
                 let target_backcolor = jQuery(referenceElement).css("background-color");
-                cur_query.css = {"background-color": target_backcolor};
+                cur_query.css["background-color"]= target_backcolor;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
@@ -367,7 +383,8 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_style");
                 let target_style = jQuery(referenceElement).css("font-style");
-                cur_query.css = {"font-style": target_style};
+                // cur_query.css = {"font-style": target_style};
+                cur_query.css["font-style"]=target_style;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
@@ -389,13 +406,91 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_weight");
                 let target_weight = jQuery(referenceElement).css("font-weight");
-                cur_query.css = {"font-weight": target_weight};
+                cur_query.css["font-weight"]= target_weight;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
                 cur.value = "0";
                 mySet.delete("filter_weight");
                 delete cur_query.css["font-weight"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_width', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_width");
+                let target_width = jQuery(referenceElement).width();
+                cur_query.jQuerySelector["width"] = function() {
+                    return Math.abs($(this).width() - target_width) < 2;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_width");
+                delete cur_query.jQuerySelector["width"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_height', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_height");
+                let target_height = jQuery(referenceElement).height();
+                cur_query.jQuerySelector["height"] = function() {
+                    return Math.abs($(this).height() - target_height) < 2;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_height");
+                delete cur_query.jQuerySelector["height"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_alignleft', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_alignleft");
+                let target_left = jQuery(referenceElement).offset().left;
+                cur_query.jQuerySelector["alignleft"] = function() {
+                    return Math.abs($(this).offset().left - target_left) < 2;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_alignleft");
+                delete cur_query.jQuerySelector["alignleft"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_prefix', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_prefix");
+                let target_prefix = jQuery(referenceElement).text().split(' ').slice(0,ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val()).join(' ');
+                // console.log(target_prefix);
+                // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
+                cur_query.jQuerySelector["filter_prefix"] = function() {
+                    return $(this).text().indexOf(target_prefix) === 0;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_prefix");
+                delete cur_query.jQuerySelector["filter_prefix"];
                 helper(referenceElement, cur_query, 1);
             }
         });
@@ -425,8 +520,17 @@ class TestTooltip {
         });
 
         ContentFrame.findElementInContentFrame('#web-view-remove', '#webview-tooltip').click(function(e) {
-            helper(referenceElement, cur_query, 1);
-            self.instance.hide();
+            e.preventDefault();
+            $('#webview-popper-container').remove();
+            referenceElement.style.outline = null;
+            let new_collect = [];
+            for (let j=0; j < collected_data.length; j++) {
+                let kval = Object.values(collected_data[j])[0];
+                if(kval !== referenceElement){
+                    new_collect.push(collected_data[j]);
+                }
+            }
+            collected_data = new_collect;
         });
         // assign
         ContentFrame.findElementInContentFrame('#web-view-assign-label', '#webview-tooltip').click(function() {
@@ -451,9 +555,9 @@ class TestTooltip {
                     appendLabel2Widget(assigned_color_label_name, assigned_color_label_name);
                 }
                 let tooltip_html = $.parseHTML('<div class="webdataview" style="background-color: ' + assigned_color + '; width: 100%; height: 100%">' +
-                    '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar"></i>' +
-                    '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove"></i>' +
-                    '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle"></i>' +
+                    // '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar"></i>' +
+                    '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove" title="Delete"></i>' +
+                    '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle" title="Select Capabilities"></i>' +
                     '</div>');
                 cf.iframe.css({"height":"40px"});
                 cf.body.empty();
@@ -500,7 +604,8 @@ let alignSelectionWithClusterClassFlag = false;
 let used_col_idx = 0;
 let class_to_color_idx = {};
 
-let TOOLTIP_IDS_ARRAY = ["web-view-select-similar", "web-view-remove"];
+// let TOOLTIP_IDS_ARRAY = ["web-view-select-similar", "web-view-remove"];
+let TOOLTIP_IDS_ARRAY = ["web-view-remove"];
 let prev;
 document.addEventListener("click", selectionHandler, true);
 
@@ -528,10 +633,14 @@ function greeting(name) {
         hover_message = hover_message + name.css("color");
         hover_message = hover_message + "\n";
     }
-    name.prop('title', hover_message);
+    // name.prop('title', hover_message);
 }
 
 function doWhenEnterDOM(node, count) {
+    // Should not be able to select menus
+    if (node.closest('#webdataview-widget-container').length) return;
+    // Should not enter a node if it is already selected, which 
+    // happens when moving mouse too fast
     if (node.data('wdv_original')===undefined) {
         // if ($.now() % 5 == 0) { // use it to reduce cost
         //     removeAllSelections(); //pretty expensive
@@ -547,6 +656,7 @@ function doWhenEnterDOM(node, count) {
 }
 
 function doWhenExitDOM(node, count) {
+    if (node.closest('#webdataview-widget-container').length) return;
     if (node.data('wdv_original')!==undefined) {
         node.prop('title', node.data('wdv_original')['title']);
         node.css('border', node.data('wdv_original')['border']);
@@ -587,6 +697,7 @@ $('*').hover(
 );
 
 function selectionHandler(event) {
+    if ($(event.target).closest('#webdataview-widget-container').length) return;
     event.preventDefault();
     event.stopPropagation();
     mySet.clear();
@@ -659,8 +770,8 @@ function selectionHandler(event) {
     }
     selected_nodes.push(event.target);
     tooltip_node = event.target;
-    event.target.style.outline = '3px dotted ' + tooltip_color;
-    tooltip_node.style['outline-offset'] = '-3px';
+    event.target.style.outline = '2px dotted ' + tooltip_color;
+    tooltip_node.style['outline-offset'] = '-2px';
     let field_label = ntc.name(rgb2hex(tooltip_color))[1];
     let data_to_push = {};
     data_to_push[field_label] = event_target;
@@ -821,13 +932,36 @@ let appendbox = [];
     ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').append('' +
         '<li class="widget-labels-li" id = '+ labelId +'> ' +
         '<svg class="widget-label-circle-svg" height="10" width="10"> ' +
-        '<circle cx="5" cy="5" r="4" stroke= '+ labelColor +' stroke-width="1.5" fill="white" />' +
+        '<circle cx="5" cy="5" r="4" stroke= '+labelColor+' stroke-width="1.5" fill="white" />' +
         ' </svg>'+ labelName +'</li>');
 
     ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').find('li#'+labelId).click(function(e) {
-        // $(e.target).hide();
-
         let current = e;
+        let circle = $(current.target).find('circle')[0];
+        let circle_color = $(circle).css('stroke');
+
+        if($('#'+labelId).length > 0){
+            $(circle).css('fill', "white");
+            $('#'+labelId).remove();
+            for(i = 0; i < circle_array.length; i++){
+                if(Object.keys(circle_array[i])[0].replace(/\s/g, '') === circle_color.replace(/\s/g, '')){
+                    let cur_temp_query = Object.values(circle_array[i])[0];
+                    cur_temp_query.disapplySelectedElements();
+                }
+            }
+            return;
+        }
+
+        $(circle).css('fill', circle_color);
+
+        for(i = 0; i < circle_array.length; i++){
+            if(Object.keys(circle_array[i])[0].replace(/\s/g, '') === circle_color.replace(/\s/g, '')){
+                let cur_temp_query = Object.values(circle_array[i])[0];
+                cur_temp_query.applySelectedElements(Object.keys(circle_array[i])[0].replace(/\s/g, ''));
+            }
+        }
+
+
         let label_name = current.target.innerText;
         // console.log(ContentFrame.findElementInContentFrame('#delete_label_id', '#webdataview-floating-widget').length);
         for(i = 0; i < appendbox.length; i++){
@@ -836,6 +970,7 @@ let appendbox = [];
         appendbox = [];
         appendbox.push(labelId);
 
+
         let widget_delete_label = new ContentFrame({
             'id': labelId,
             'class':'delete_label_class',
@@ -843,7 +978,7 @@ let appendbox = [];
             'css': ['lib/font-awesome/css/font-awesome.css'],
             'js': ['app/contentScript/webView/label_delete.js'],
             'inlineCss': {"width": "200px", "height": "165px", "border": "none", "border-radius": 6,
-                "margin-top": "60px", "background-color": "black"}
+                "margin-top": "60px", "background-color": "black",  "position": "fixed", "z-index": 2147483647, "overflow-y": "hidden"}
         });
         let tooltip_html = $.parseHTML('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">' +
             '<div>' +
@@ -858,6 +993,7 @@ let appendbox = [];
             '</div>');
 
         widget_delete_label.body.append(tooltip_html);
+
         // ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').append('' +
         //     '<li class="widget-labels-li" id = '+ labelId +'> ' +
         //     '<svg class="widget-label-circle-svg" height="10" width="10"> ' +
