@@ -744,9 +744,13 @@ function doWhenEnterDOM(node, count) {
 
 function doWhenExitDOM(node, count) {
     if (node.closest('#webdataview-widget-container').length) return;
+    console.log(node);
+    console.log(node.data('wdv_original'));
     if (node.data('wdv_original')!==undefined) {
-        node.prop('title', node.data('wdv_original')['title']);
-        node.css('outline', node.data('wdv_original')['outline']);
+        if (node.data('wdv_original')['is_selected']===undefined) {
+            node.prop('title', node.data('wdv_original')['title']);
+            node.css('outline', node.data('wdv_original')['outline']);
+        }
         node.removeData('wdv_original');
     }
     // else if (count < 10) {
@@ -858,7 +862,8 @@ function selectionHandler(event) {
     }
     selected_nodes.push(event.target);
     tooltip_node = event.target;
-    event.target.style.outline = '2px dotted ' + tooltip_color;
+    $(tooltip_node).data('wdv_original')['is_selected']='true';
+    tooltip_node.style.outline = '2px dotted ' + tooltip_color;
     tooltip_node.style['outline-offset'] = '-2px';
     let field_label = ntc.name(rgb2hex(tooltip_color))[1];
     let data_to_push = {};
