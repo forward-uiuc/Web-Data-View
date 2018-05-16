@@ -26,21 +26,23 @@ Our solution creates data view, which allows users to interact with web pages as
 
 ## Insights
 * The key to avoid conflicts is to isolate javascript and css of web pages and Chrome extension
-* User input is very powerful for instantiating generic model for specific web page. For example, we may know generic rule "same title field same class names". However, it is useless without knowing exactly which classnames they share. A single "click" from users can tell us which class names.
+* User input is very powerful for instantiating generic model for specific web page. For example, we may know generic rule "same title field same class names". However, it is useless without knowing exactly which classnames they share. Fortunately, a single "click" from users can tell us which class names
 * Web pages can be grouped into categories where corresponding intents are likely to match
 
 ## Current solution
-* Use contentframe to isolate css. Chrome extension isolates javascript for us by default.
+* Use contentframe to isolate css. Chrome extension isolates javascript for us by default
 * Allow users to select predefined generic descriptive rules, and visually choose one value sample to instantiate the rules.
 * Use URL to match intents with web pages
 
 ## To install
-Open Chrome and type chrome://extensions/ in the URL box. Download and drag the crx file in the most recent release to the page you have just openned. Open a page like https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=laptop and click on our Chrome Extension button.
+Check out the code. And then load folder ng-dashboard you have just downloaded as an unpacked Chrome extension following the [instruction](https://support.google.com/chrome/a/answer/2714278?hl=en). It will create button <img src='https://github.com/forward-uiuc/Web-Data-View/blob/master/ng-dashboard/assets/logo/logo_color_16.png'> for our extension at the top right corner of Chrome browser. To use the extension, open a page like https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=laptop and click on our Chrome Extension button.
 
 ## To make change to the code
-Check out the code. And then load folder ng-dashboard you have just downloaded as an unpacked Chrome extension following the instruction: https://support.google.com/chrome/a/answer/2714278?hl=en. Please note that whenever you make a change on the code, you need to reload the unpacked extension on chrome://extensions/ for the change to take effect.
+After making changes to the code, you need to reload the unpacked extension on [chrome://extensions/](chrome://extensions/) so that the changes can take effect.
 
 ## Potential improvements
 * Makes selecting data value samples easily by smart segmentation
 * Allows users to descriptive queries, which are more robust against changes than classnames
 * ???
+
+This software is developed at [Forward@UIUC Group](http://forwarddatalab.org/kevinchang)

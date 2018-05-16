@@ -1020,13 +1020,36 @@ let appendbox = [];
     ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').append('' +
         '<li class="widget-labels-li" id = '+ labelId +'> ' +
         '<svg class="widget-label-circle-svg" height="10" width="10"> ' +
-        '<circle cx="5" cy="5" r="4" stroke= '+ labelColor +' stroke-width="1.5" fill="white" />' +
+        '<circle cx="5" cy="5" r="4" stroke= '+labelColor+' stroke-width="1.5" fill="white" />' +
         ' </svg>'+ labelName +'</li>');
 
     ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').find('li#'+labelId).click(function(e) {
-        // $(e.target).hide();
-
         let current = e;
+        let circle = $(current.target).find('circle')[0];
+        let circle_color = $(circle).css('stroke');
+
+        if($('#'+labelId).length > 0){
+            $(circle).css('fill', "white");
+            $('#'+labelId).remove();
+            for(i = 0; i < circle_array.length; i++){
+                if(Object.keys(circle_array[i])[0].replace(/\s/g, '') === circle_color.replace(/\s/g, '')){
+                    let cur_temp_query = Object.values(circle_array[i])[0];
+                    cur_temp_query.disapplySelectedElements();
+                }
+            }
+            return;
+        }
+
+        $(circle).css('fill', circle_color);
+
+        for(i = 0; i < circle_array.length; i++){
+            if(Object.keys(circle_array[i])[0].replace(/\s/g, '') === circle_color.replace(/\s/g, '')){
+                let cur_temp_query = Object.values(circle_array[i])[0];
+                cur_temp_query.applySelectedElements(Object.keys(circle_array[i])[0].replace(/\s/g, ''));
+            }
+        }
+
+
         let label_name = current.target.innerText;
         // console.log(ContentFrame.findElementInContentFrame('#delete_label_id', '#webdataview-floating-widget').length);
         for(i = 0; i < appendbox.length; i++){
@@ -1034,6 +1057,7 @@ let appendbox = [];
         }
         appendbox = [];
         appendbox.push(labelId);
+
 
         let widget_delete_label = new ContentFrame({
             'id': labelId,
@@ -1057,6 +1081,7 @@ let appendbox = [];
             '</div>');
 
         widget_delete_label.body.append(tooltip_html);
+
         // ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').append('' +
         //     '<li class="widget-labels-li" id = '+ labelId +'> ' +
         //     '<svg class="widget-label-circle-svg" height="10" width="10"> ' +
