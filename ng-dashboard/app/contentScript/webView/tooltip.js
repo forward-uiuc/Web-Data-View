@@ -92,6 +92,9 @@ class TestTooltip {
             '<label for="subscribeNews">Filter by Left Alignment</label>' +
             '<br><input type="checkbox" id="filter_prefix" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Prefix </label> <select id="filter_prefix_num" value="1"><option value="1">1</option><option value="2">2</option> <option value="3">3</option><option value="4">4</option></select>' +
+			'<br><input type="checkbox" id="filter_token" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Token</label>' +
+			'<input type="text" id="filter_token_text" name="name" value="">' +
             // '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
             // '<label for="subscribeNews">Filter by Height</label>' +
             // '<br><input type="checkbox" id="filter_width" name="subscribe" value="0">'+
@@ -494,6 +497,36 @@ class TestTooltip {
                 helper(referenceElement, cur_query, 1);
             }
         });
+
+        ContentFrame.findElementInContentFrame('#filter_token', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_token");
+                let target_token = ContentFrame.findElementInContentFrame('#filter_token_text', '#webview-tooltip').val();
+                // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
+                cur_query.jQuerySelector["filter_token"] = function() {
+                    return $(this).text().indexOf(target_token) != -1;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_token");
+                delete cur_query.jQuerySelector["filter_token"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+        // Reapply filter on input change
+        ContentFrame.findElementInContentFrame('#filter_token_text', '#webview-tooltip')[0].oninput = function(e) {
+            // console.log("CHANGE");
+            if (ContentFrame.findElementInContentFrame('#filter_token', '#webview-tooltip').val() === "1") {
+                cur_query.jQuerySelector["filter_token"] = function() {
+                    return $(this).text().indexOf(e.target.value) != -1;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+        };
 
         ContentFrame.findElementInContentFrame('#web-view-select-similar', '#webview-tooltip').click(function(e) {
             if (referenceElement.className === '' || referenceElement.className === undefined) {
