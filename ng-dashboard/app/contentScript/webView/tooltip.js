@@ -72,6 +72,12 @@ class TestTooltip {
             '<label for="subscr ibeNews">Filter by ClassName</label>' +
             '<br><input type="checkbox" id="filter_id" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Id</label>' +
+
+            // Test of filter by tagname
+            '<br><input type="checkbox" id="filter_tagname" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by TagName</label>' +
+            //////////////////////////////////////////////////////////
+
             '<br><input type="checkbox" id="filter_fontsize" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Fontsize</label>' +
             '<br><input type="checkbox" id="filter_fontcolor" name="subscribe" value="0">'+
@@ -303,6 +309,37 @@ class TestTooltip {
                 helper(referenceElement, cur_query, 1);
             }
         });
+
+        ///////////////
+
+
+        ContentFrame.findElementInContentFrame('#filter_tagname', '#webview-tooltip').click(function(e) {
+            if (referenceElement.tagName === '' || referenceElement.tagName === undefined) {
+                alert("No tag is selected!");
+                ContentFrame.findElementInContentFrame('#filter_tagname', '#webview-tooltip').attr("disabled","true");
+                return;
+            }
+            let cur = e.target;
+            if (cur.value === "0") {  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_tagname");
+
+                let target_tag = referenceElement.tagName;
+                cur_query.tag = target_tag;
+                console.log("query: ", cur_query);
+                helper(referenceElement, cur_query, 0);
+            }
+
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_tagname");
+                cur_query.tag = false;
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+
+        ///////////////
 
         ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').click(function(e) {
             if(jQuery(referenceElement).css("font-size") === '' || jQuery(referenceElement).css("font-size") === undefined ){

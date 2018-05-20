@@ -61,6 +61,16 @@ class Query {
             matches = matches.filter(classjQuerySelector);
         }
 
+        ////////////////////////////
+        if (this.tag) {
+            if (!matches) {
+                matches = $("*");
+            }
+            let classjQuerySelector = "".concat(($.trim(this.tag)).replace(/\s+/g, "."));
+            matches = matches.filter(classjQuerySelector);
+        }
+        ////////////////////////////
+
         if (this.jQuerySelector) {
             if (!matches) {
                 matches = $("*");
