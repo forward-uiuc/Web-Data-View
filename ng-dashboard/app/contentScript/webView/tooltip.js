@@ -504,6 +504,9 @@ class TestTooltip {
                 cur.value = "1";
                 mySet.add("filter_token");
                 let target_token = ContentFrame.findElementInContentFrame('#filter_token_text', '#webview-tooltip').val();
+                if (jQuery(referenceElement).text().indexOf(target_token) == -1)  {
+                    alert("Token not in the element.")
+                }
                 // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
                 cur_query.jQuerySelector["filter_token"] = function() {
                     return $(this).text().indexOf(target_token) != -1;
