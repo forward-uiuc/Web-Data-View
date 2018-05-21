@@ -73,9 +73,14 @@ class TestTooltip {
             '<br><input type="checkbox" id="filter_id" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Id</label>' +
 
-            // Test of filter by tagname
+            // Filter by tagname
             '<br><input type="checkbox" id="filter_tagname" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by TagName</label>' +
+            //////////////////////////////////////////////////////////
+
+            // Filter by number of words in text
+            '<br><input type="checkbox" id="filter_numwords" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by NumWords</label>  <select id="filter_numwords_parameter" value="1"><option value="0.0">0.0</option><option value="0.1">0.1</option><option value="0.2">0.2</option> <option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1.0">1.0</option></select>'+
             //////////////////////////////////////////////////////////
 
             '<br><input type="checkbox" id="filter_fontsize" name="subscribe" value="0">'+
@@ -312,7 +317,6 @@ class TestTooltip {
 
         ///////////////
 
-
         ContentFrame.findElementInContentFrame('#filter_tagname', '#webview-tooltip').click(function(e) {
             if (referenceElement.tagName === '' || referenceElement.tagName === undefined) {
                 alert("No tag is selected!");
@@ -338,8 +342,51 @@ class TestTooltip {
             }
         });
 
+        ///////////////
+
+
+
 
         ///////////////
+
+        ContentFrame.findElementInContentFrame('#filter_numwords', '#webview-tooltip').click(function(e) {
+            if(ContentFrame.findElementInContentFrame('#filter_lower_bound', '#webview-tooltip').val() > ContentFrame.findElementInContentFrame('#filter_upper_bound', '#webview-tooltip').val()){
+                ContentFrame.findElementInContentFrame('#filter_numwords', '#webview-tooltip').prop("checked", false);
+                alert("Invalid bound!");
+                return;
+            }
+            else{
+                let cur = e.target;
+                if(cur.value === "0"){  //Add model to collection
+                    cur.value = "1";
+                    mySet.add("filter_numwords");
+                    let parameter = ContentFrame.findElementInContentFrame('#filter_numwords_parameter', '#webview-tooltip').val();
+                    let lower_bound = parameter * jQuery(referenceElement).text().split(' ').length;
+                    let upper_bound = (parameter+1) * jQuery(referenceElement).text().split(' ').length;
+                    // console.log("parameter: ", parameter);
+                    // console.log("lower: ", lower_bound);
+                    // console.log("upper: ", upper_bound);
+                    // let target_num = jQuery(referenceElement).text().split(' ');
+                    // console.log(target_prefix);
+                    // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
+                    cur_query.jQuerySelector["filter_numwords"] = function() {
+                        return $(this).text().split(' ').length >= lower_bound && $(this).text().split(' ').length <= upper_bound;
+                    };
+                    helper(referenceElement, cur_query, 0);
+                }
+                else{  //Take model off collection
+                    cur.value = "0";
+                    mySet.delete("filter_numwords");
+                    delete cur_query.jQuerySelector["filter_numwords"];
+                    helper(referenceElement, cur_query, 1);
+                }
+            }
+        });
+
+        ///////////////
+
+
+
 
         ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').click(function(e) {
             if(jQuery(referenceElement).css("font-size") === '' || jQuery(referenceElement).css("font-size") === undefined ){
@@ -522,6 +569,7 @@ class TestTooltip {
                 cur_query.jQuerySelector["filter_prefix"] = function() {
                     return $(this).text().indexOf(target_prefix) === 0;
                 };
+
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
