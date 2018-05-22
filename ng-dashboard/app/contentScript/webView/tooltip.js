@@ -362,10 +362,12 @@ class TestTooltip {
                     mySet.add("filter_numwords");
                     let parameter = ContentFrame.findElementInContentFrame('#filter_numwords_parameter', '#webview-tooltip').val();
                     let lower_bound = parameter * jQuery(referenceElement).text().split(' ').length;
-                    let upper_bound = (parameter+1) * jQuery(referenceElement).text().split(' ').length;
-                    // console.log("parameter: ", parameter);
-                    // console.log("lower: ", lower_bound);
-                    // console.log("upper: ", upper_bound);
+                    let upper_bound = (parseFloat(parameter)+1) * jQuery(referenceElement).text().split(' ').length;
+                    console.log("textLength: ", jQuery(referenceElement).text().split(' ').length);
+                    console.log("parameter: ", parameter);
+                    console.log("+1: ", parseFloat(parameter)+1);
+                    console.log("lower: ", lower_bound);
+                    console.log("upper: ", upper_bound);
                     // let target_num = jQuery(referenceElement).text().split(' ');
                     // console.log(target_prefix);
                     // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
