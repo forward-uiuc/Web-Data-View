@@ -70,7 +70,7 @@ class TestTooltip {
             '<br><div id="cap_target" style="display: none;">' +
             '<input type="checkbox" id="filter_class" name="subscribe" value="0">'+
             '<label for="subscr ibeNews">Filter by ClassName</label>' +
-            '<input type="checkbox" id="filter_ancesstor_class" name="subscribe" value="0">'+
+            '<br><input type="checkbox" id="filter_ancesstor_class" name="subscribe" value="0">'+
             '<label for="subscr ibeNews">Filter by AncestorClass</label>' +
             '<br><input type="checkbox" id="filter_id" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Id</label>' +
