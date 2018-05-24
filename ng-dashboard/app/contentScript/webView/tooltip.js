@@ -98,13 +98,13 @@ class TestTooltip {
             '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Height</label>' +
             '<br><input type="checkbox" id="filter_alignleft" name="subscribe" value="0">'+
-            '<label for="subscribeNews">Filter by Left Alignment</label>' +
-            '<br><input type="checkbox" id="filter_xpath" name="subscribe" value="0">'+
+            // '<label for="subscribeNews">Old Filter by Left Alignment</label>' +
+            // '<br><input type="checkbox" id="filter_xpath" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by XPath</label>' +
             '<br><input type="checkbox" id="filter_left_align_with" name="subscribe" value="0">'+
-            '<label for="subscribeNews">Left Align using XPath</label>' +
+            '<label for="subscribeNews">Filter by Left Alignment</label>' +
             '<br><input type="checkbox" id="filter_top_align_with" name="subscribe" value="0">'+
-            '<label for="subscribeNews">Top Align using XPath</label>' +
+            '<label for="subscribeNews">Filter by Top Alignment</label>' +
             '<br><input type="checkbox" id="filter_prefix" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Prefix </label> <select id="filter_prefix_num" value="1"><option value="1">1</option><option value="2">2</option> <option value="3">3</option><option value="4">4</option></select>' +
             '<br><input type="checkbox" id="filter_suffix" name="subscribe" value="0">'+
