@@ -218,7 +218,7 @@ class TestTooltip {
             } else {
                 x.style.display = "none";
                 $("#webview-tooltip")[0].style.height = "40px";
-                $("#webview-tooltip")[0].style.width = "90px";
+                $("#webview-tooltip")[0].style.width = "140px";
 
             }
         });
@@ -601,6 +601,9 @@ class TestTooltip {
                 //alert(element);
                 var id = $(element.parentNode).children(element.tagName).index(element) + 1;
                 id > 1 ? (id = '[' + id + ']') : (id = '');
+                if (element.id) {
+                    return '//*[@id="' + element.id + '"]' + id + xpath;
+                }
                 xpath = '/' + element.tagName.toLowerCase() + id + xpath;
             }
             return xpath;
