@@ -275,6 +275,15 @@ $(document).ready(function(){
                         setTimeout(function() { positionShadowOnWidgetLabels(); }, 300);
                         $(window).resize(positionShadowOnWidgetLabels);
 
+                        let scroll_left = ContentFrame.findElementInContentFrame('#widget-left-arrow', '#webdataview-widget-iframe');
+                        let scroll_right = ContentFrame.findElementInContentFrame('#widget-right-arrow', '#webdataview-widget-iframe');
+                        scroll_left.click(function(e) {
+                            widget_label_selector.animate({ scrollLeft: '-=100'}, 200);
+                        });
+                        scroll_right.click(function(e) {
+                            widget_label_selector.animate({ scrollLeft: '+=100'}, 200);
+                        });
+
                         /******************************** Floating Widget Menu API ********************************/
 
                         let FloatingWidgetMenu = {};
