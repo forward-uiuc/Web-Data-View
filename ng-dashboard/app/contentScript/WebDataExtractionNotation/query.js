@@ -40,7 +40,14 @@ class Query {
         }
         if (query.css) {
             this.css = query.css;
-        } else {
+        }
+        if (query.topAlignWith) {
+            this.topAlignWith = query.topAlignWith;
+        }
+        if (query.leftAlignWith) {
+            this.leftAlignWith = query.leftAlignWith;
+        }
+        else {
             this.css = {}
         }
 
@@ -90,6 +97,65 @@ class Query {
                 return retVal;
             });
         }
+
+        if (this.topAlignWith) {
+            var iter = document.evaluate(this.topAlignWith, document, null, XPathResult.ANY_TYPE, null);
+  
+            var elem = iter.iterateNext();
+            var topAlignWithMatches = [];
+            
+            while (elem) {
+  
+              function getElementsByLeftOffset(top) {
+                  if (!matches) { matches =  $('*'); }
+                  return matches.filter(function() {
+                      return Math.abs($(this).offset().top - top) <= 5;
+                  });
+              }
+  
+              topAlignWithMatches = getElementsByLeftOffset($(elem).offset().top).toArray();
+  
+              try {
+                elem = iter.iterateNext();
+              }
+              catch(error) {
+                console.error(error);
+                elem = undefined;
+              }
+            }
+  
+            return topAlignWithMatches;
+          }
+  
+          if (this.leftAlignWith) {
+            var iter = document.evaluate(this.leftAlignWith, document, null, XPathResult.ANY_TYPE, null);
+  
+            var elem = iter.iterateNext();
+            var leftAlignMatches = [];
+  
+            while (elem) {
+              // console.log($( "[position="+ elem.position[0] +"]" ).toArray());
+  
+              function getElementsByLeftOffset(left) {
+                  if (!matches) { matches = $("*"); }
+                  return matches.filter(function() {
+                      return Math.abs($(this).offset().left - left) <= 5;
+                  });
+              }
+  
+              leftAlignMatches = getElementsByLeftOffset($(elem).offset().left).toArray();
+  
+              try {
+                elem = iter.iterateNext();
+              }
+              catch(error) {
+                console.error(error);
+                elem = undefined;
+              }
+            }
+  
+            return leftAlignMatches;
+          }
 
         if (matches) {
             return matches.toArray();
