@@ -233,4 +233,11 @@ class Query {
         return JSON.stringify(j);
     }
 
+    /**
+     * check if the query is empty
+    */
+    isEmpty() {
+        return ((!this.jQuerySelector || jQuery.isEmptyObject(this.jQuerySelector)) && (!this.css || jQuery.isEmptyObject(this.css)) && !this.class && !this.topAlignWith && !this.leftAlignWith );
+    }
+
 }
