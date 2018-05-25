@@ -19,6 +19,10 @@
  }
  */
 
+let selectionExpansion = [];
+let prev_color_to_class_idx = [];
+let selectionExpansionIdx = 0;
+
 let COLORS = ["(2,63,165)","(125,135,185)","(190,193,212)","(214,188,192)","(187,119,132)","(142,6,59)","(74,111,227)","(133,149,225)","(181,187,227)","(230,175,185)","(224,123,145)","(211,63,106)","(17,198,56)","(141,213,147)","(198,222,199)","(234,211,198)","(240,185,141)","(239,151,8)","(15,207,192)","(156,222,214)","(213,234,231)","(243,225,235)","(246,196,225)","(247,156,212)"];
 shuffle(COLORS);
 let collected_data = [];
@@ -60,18 +64,24 @@ class TestTooltip {
             'appendTo': '#webview-popper-container',
             'css': ['lib/font-awesome/css/font-awesome.css', 'lib/bootstrap/css/bootstrap.3.3.7.min.css'],
             'js': ['app/contentScript/webView/tooltipHandler.js'],
-            'inlineCss':  {"width": "90px", "height": "40px", "z-index": 2147483640, "border": "none", "border-radius": 6, "overflow": "visible", "display": "display"}
+            'inlineCss':  {"width": "140px", "height": "40px", "z-index": 2147483640, "border": "none", "border-radius": 6, "overflow": "visible", "display": "display"}
     });
         let tooltip_html = $.parseHTML('<div class="webdataview" id="webdataview_id" style="background-color: ' + color + '; width: 100%; height: auto; overflow: visible; z-index: 2147483647 !important; ">' +
             // '<i class="fa fa-tag fa-fw-lg" id="web-view-assign-label" style="margin-left: 15px"></i> ' +
             // '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar" style="color: black;"></i>' +
             '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove"  style="color: black;" title="Delete"></i>' +
+            '<i class="fa fa-plus-circle fa-fw-lg" id="web-view-expand-selection"  style="color: black;" title="Expand Selection"></i>' +
+            '<i class="fa fa-minus-circle fa-fw-lg" id="web-view-reduce-selection"  style="color: black;" title="Reduce Selection"></i>' +
             '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle"  style="color: black; font-weight: 100;" title="Select Capabilities"></i>' +
             '<br><div id="cap_target" style="display: none;">' +
             '<input type="checkbox" id="filter_class" name="subscribe" value="0">'+
             '<label for="subscr ibeNews">Filter by ClassName</label>' +
+            '<br><input type="checkbox" id="filter_ancesstor_class" name="subscribe" value="0">'+
+            '<label for="subscr ibeNews">Filter by AncestorClass</label>' +
             '<br><input type="checkbox" id="filter_id" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Id</label>' +
+            '<br><input type="checkbox" id="filter_tag" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Tag name</label>' +
             '<br><input type="checkbox" id="filter_fontsize" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Fontsize</label>' +
             '<br><input type="checkbox" id="filter_fontcolor" name="subscribe" value="0">'+
@@ -88,10 +98,18 @@ class TestTooltip {
             '<label for="subscribeNews">Filter by Width</label>' +
             '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Height</label>' +
-            '<br><input type="checkbox" id="filter_alignleft" name="subscribe" value="0">'+
+            // '<br><input type="checkbox" id="filter_alignleft" name="subscribe" value="0">'+
+            // '<label for="subscribeNews">Old Filter by Left Alignment</label>' +
+            '<br><input type="checkbox" id="filter_xpath" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by XPath</label>' +
+            '<br><input type="checkbox" id="filter_left_align_with" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Left Alignment</label>' +
+            '<br><input type="checkbox" id="filter_top_align_with" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Top Alignment</label>' +
             '<br><input type="checkbox" id="filter_prefix" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Prefix </label> <select id="filter_prefix_num" value="1"><option value="1">1</option><option value="2">2</option> <option value="3">3</option><option value="4">4</option></select>' +
+            '<br><input type="checkbox" id="filter_suffix" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Suffix </label> <select id="filter_suffix_num" value="1"><option value="1">1</option><option value="2">2</option> <option value="3">3</option><option value="4">4</option></select>' +
             // '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
             // '<label for="subscribeNews">Filter by Height</label>' +
             // '<br><input type="checkbox" id="filter_width" name="subscribe" value="0">'+
@@ -191,7 +209,7 @@ class TestTooltip {
             let arrow_target = ContentFrame.findElementInContentFrame('#webdataview_id', '#webview-tooltip').find('#cap_toggle');
             arrow_target.toggleClass("fa fa-angle-double-up fa-fw-lg fa fa-angle-double-down fa-fw-lg");
 
-            let stretch = "110px";
+            let stretch = "150px";
             let width_stretch = "195px";
             let x = ContentFrame.findElementInContentFrame('#cap_target', '#webview-tooltip')[0];
             if (x.style.display === "none") {
@@ -201,7 +219,7 @@ class TestTooltip {
             } else {
                 x.style.display = "none";
                 $("#webview-tooltip")[0].style.height = "40px";
-                $("#webview-tooltip")[0].style.width = "90px";
+                $("#webview-tooltip")[0].style.width = "140px";
 
             }
         });
@@ -280,6 +298,42 @@ class TestTooltip {
             }
         });
 
+        ContentFrame.findElementInContentFrame('#filter_ancesstor_class', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_ancesstor_class");
+                let prs = $(referenceElement).parents();
+                let target_tag = "";
+                for (let i = 0; i < prs.length; i++) {
+                    if (prs[i].className != undefined) {
+                        target_tag = prs[i].className;
+                        break;
+                    }
+                }
+
+                // cur_query.css = {"fontSize": target_font};
+                cur_query.jQuerySelector["ancesstor_class"] = function() {
+                    let cur_prs = $(this).parents();
+                    let cur_tag = "";
+                    for (let i = 0; i < cur_prs.length; i++) {
+                        if (cur_prs[i].className != undefined) {
+                            cur_tag = cur_prs[i].className;
+                            break;
+                        }
+                    }
+                    return cur_tag === target_tag;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_ancesstor_class");
+                delete cur_query.jQuerySelector["ancesstor_class"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
         ContentFrame.findElementInContentFrame('#filter_id', '#webview-tooltip').click(function(e) {
             if(referenceElement.id === '' || referenceElement.id === undefined ){
                 alert("This element has no Id attribute!");
@@ -300,6 +354,26 @@ class TestTooltip {
                 cur.value = "0";
                 mySet.delete("filter_id");
                 cur_query.id = false;
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_tag', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_tag");
+                let target_tag = referenceElement.tagName;
+                // cur_query.css = {"fontSize": target_font};
+                cur_query.jQuerySelector["tagName"] = function() {
+                    return this.tagName === target_tag;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_tag");
+                delete cur_query.jQuerySelector["tagName"];
                 helper(referenceElement, cur_query, 1);
             }
         });
@@ -495,6 +569,106 @@ class TestTooltip {
             }
         });
 
+        ContentFrame.findElementInContentFrame('#filter_suffix', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_suffix");
+                let txt = jQuery(referenceElement).text().trim();
+                let target_suffix = txt.split(' ').splice(-ContentFrame.findElementInContentFrame('#filter_suffix_num', '#webview-tooltip').val()).join(' ');
+                // console.log(txt.lastIndexOf(target_suffix));
+                // console.log(txt.length);
+                // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
+                cur_query.jQuerySelector["filter_suffix"] = function() {
+                    let cur_txt = $(this).text().trim()
+                    let idx = cur_txt.lastIndexOf(target_suffix);
+                    return (idx > 0 && cur_txt.length - idx === target_suffix.length);
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_suffix");
+                delete cur_query.jQuerySelector["filter_suffix"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        function getXPath( element )
+        {
+            var xpath = '';
+            for ( ; element && element.nodeType == 1; element = element.parentNode )
+            {
+                //alert(element);
+                var id = $(element.parentNode).children(element.tagName).index(element) + 1;
+                id > 1 ? (id = '[' + id + ']') : (id = '');
+                if (element.id) {
+                    return '//*[@id="' + element.id + '"]' + id + xpath;
+                }
+                xpath = '/' + element.tagName.toLowerCase() + id + xpath;
+            }
+            return xpath;
+        }
+
+        /**
+        * get xpath of current element
+        * select all elements that have that xpath
+        * add those elements to highlights
+        */
+        ContentFrame.findElementInContentFrame('#filter_xpath', '#webview-tooltip').click(function(e) {
+
+
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_xpath");
+                let target_xpath = getXPath(referenceElement);
+                console.log("XPath of clicked element is: ", target_xpath);
+                cur_query.jQuerySelector["xpath"] = function() {
+                    return getXPath($(this).get(0)) == target_xpath;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_xpath");
+                delete cur_query.jQuerySelector["xpath"];
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_left_align_with', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_left_align_with");
+                cur_query.leftAlignWith = getXPath(referenceElement);
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_left_align_with");
+                delete cur_query.leftAlignWith;
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
+        ContentFrame.findElementInContentFrame('#filter_top_align_with', '#webview-tooltip').click(function(e) {
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_top_align_with");
+                cur_query.topAlignWith = getXPath(referenceElement);
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_top_align_with");
+                delete cur_query.topAlignWith;
+                helper(referenceElement, cur_query, 1);
+            }
+        });
+
         ContentFrame.findElementInContentFrame('#web-view-select-similar', '#webview-tooltip').click(function(e) {
             if (referenceElement.className === '' || referenceElement.className === undefined) {
                 alert("This element has no Class attribute!");
@@ -532,6 +706,68 @@ class TestTooltip {
             }
             collected_data = new_collect;
         });
+
+        ContentFrame.findElementInContentFrame('#web-view-expand-selection', '#webview-tooltip').click(function(e) {
+            e.preventDefault();
+            if (selectionExpansion.indexOf(referenceElement) == -1) {
+                selectionExpansion = [];
+                prev_color_to_class_idx = [];
+                selectionExpansionIdx = 0;
+            }
+            // if length of selExpansion is 0, add referenceElement
+            if (selectionExpansion.length === 0) {
+                selectionExpansion.push(referenceElement);
+            }
+            // get parent of referenceElement
+            let parent = $(referenceElement).parent().get(0);
+            // console.log("parent is: ", parent);
+            // add to selection expansion
+            selectionExpansion.push(parent);
+            // increment index of selection expansion
+            selectionExpansionIdx += 1;
+            // set color to classname mapping same as its child node's
+            referenceElement =  selectionExpansion[selectionExpansionIdx];
+            prev_color_to_class_idx.push(class_to_color_idx[referenceElement.className]);
+            class_to_color_idx[referenceElement.className] = class_to_color_idx[selectionExpansion[0].className];
+            // click on indexed selection Expansion
+            cur_query.highlightSelectedElements('none');
+            cur_query = new Query({});
+            $(selectionExpansion[selectionExpansionIdx]).trigger("click");
+        });
+
+        ContentFrame.findElementInContentFrame('#web-view-reduce-selection', '#webview-tooltip').click(function(e) {
+            e.preventDefault();
+            // if length of selExpansion is 0
+            if (selectionExpansion.indexOf(referenceElement) == -1) {
+                selectionExpansion = [];
+                prev_color_to_class_idx = [];
+                selectionExpansionIdx = 0;
+            }
+
+            if (selectionExpansion.length <= 0) { return; }
+
+            let parentHighlight = selectionExpansion[selectionExpansionIdx].style.outline;
+
+            selectionExpansionIdx -= 1;
+            // click on indexed selection Expansion
+            if (selectionExpansion[selectionExpansionIdx+1] && selectionExpansion[selectionExpansionIdx+1].style.outline) {
+                // console.log("parent style is not null");
+                selectionExpansion[selectionExpansionIdx+1].style.outline = null;
+                cur_query.highlightSelectedElements('none');
+                if (selectionExpansion[selectionExpansionIdx]) {
+                    selectionExpansion[selectionExpansionIdx].style.outline = parentHighlight;
+                }
+            }
+
+            // remove color to classname mapping of its parent
+            class_to_color_idx[referenceElement.className] = prev_color_to_class_idx[prev_color_to_class_idx.length-1];
+            referenceElement =  selectionExpansion[selectionExpansionIdx];
+            // remove from prev color TODO
+            delete prev_color_to_class_idx[prev_color_to_class_idx.length-1];
+            cur_query = new Query({}); 
+            $(referenceElement).trigger("click");
+        });
+
         // assign
         ContentFrame.findElementInContentFrame('#web-view-assign-label', '#webview-tooltip').click(function() {
             cf.body.empty();
@@ -557,6 +793,8 @@ class TestTooltip {
                 let tooltip_html = $.parseHTML('<div class="webdataview" style="background-color: ' + assigned_color + '; width: 100%; height: 100%">' +
                     // '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar"></i>' +
                     '<i class="fa fa-trash-o fa-fw-lg" id="web-view-remove" title="Delete"></i>' +
+                    '<i class="fa fa-plus-circle fa-fw-lg" id="web-view-expand-selection"  style="color: black;" title="Expand Selection"></i>' +
+                    '<i class="fa fa-minus-circle fa-fw-lg" id="web-view-reduce-selection"  style="color: black;" title="Reduce Selection"></i>' +        
                     '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle" title="Select Capabilities"></i>' +
                     '</div>');
                 cf.iframe.css({"height":"40px"});
@@ -646,8 +884,8 @@ function doWhenEnterDOM(node, count) {
         //     removeAllSelections(); //pretty expensive
         // }
         removeAllSelections(); //pretty expensive, use the method above to reduce cost
-        node.data('wdv_original',{title:node.prop('title'),border:node.css('border')});
-        node.css('border', '1px dotted black');
+        node.data('wdv_original',{title:node.prop('title'),outline:node.css('outline')});
+        node.css('outline', '1px dotted black');
         greeting(node);
     }
     // else if (count < 10) {
@@ -657,9 +895,13 @@ function doWhenEnterDOM(node, count) {
 
 function doWhenExitDOM(node, count) {
     if (node.closest('#webdataview-widget-container').length) return;
+    // console.log(node);
+    // console.log(node.data('wdv_original'));
     if (node.data('wdv_original')!==undefined) {
-        node.prop('title', node.data('wdv_original')['title']);
-        node.css('border', node.data('wdv_original')['border']);
+        if (node.data('wdv_original')['is_selected']===undefined) {
+            node.prop('title', node.data('wdv_original')['title']);
+            node.css('outline', node.data('wdv_original')['outline']);
+        }
         node.removeData('wdv_original');
     }
     // else if (count < 10) {
@@ -676,6 +918,7 @@ function removeAllSelections() {
 
 $('*').hover(
     function(e){
+        //console.log(e.target);
         // The condition is to prevent the case when moving the mouse too fast
         // that it re-enters the element before finishing the previous entering
         doWhenEnterDOM($(this),0);
@@ -770,7 +1013,12 @@ function selectionHandler(event) {
     }
     selected_nodes.push(event.target);
     tooltip_node = event.target;
-    event.target.style.outline = '2px dotted ' + tooltip_color;
+    // console.log("event target is: ", tooltip_node);
+    if (tooltip_node && $(tooltip_node).data('wdv_original')!==undefined) {
+        // if (tooltip_node.data('wdv_original')['is_selected']===undefined) {
+        $(tooltip_node).data('wdv_original')['is_selected']='true';
+    }
+    tooltip_node.style.outline = '2px dotted ' + tooltip_color;
     tooltip_node.style['outline-offset'] = '-2px';
     let field_label = ntc.name(rgb2hex(tooltip_color))[1];
     let data_to_push = {};
@@ -932,13 +1180,36 @@ let appendbox = [];
     ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').append('' +
         '<li class="widget-labels-li" id = '+ labelId +'> ' +
         '<svg class="widget-label-circle-svg" height="10" width="10"> ' +
-        '<circle cx="5" cy="5" r="4" stroke= '+ labelColor +' stroke-width="1.5" fill="white" />' +
+        '<circle cx="5" cy="5" r="4" stroke= '+labelColor+' stroke-width="1.5" fill="white" />' +
         ' </svg>'+ labelName +'</li>');
 
     ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').find('li#'+labelId).click(function(e) {
-        // $(e.target).hide();
-
         let current = e;
+        let circle = $(current.target).find('circle')[0];
+        let circle_color = $(circle).css('stroke');
+
+        if($('#'+labelId).length > 0){
+            $(circle).css('fill', "white");
+            $('#'+labelId).remove();
+            for(i = 0; i < circle_array.length; i++){
+                if(Object.keys(circle_array[i])[0].replace(/\s/g, '') === circle_color.replace(/\s/g, '')){
+                    let cur_temp_query = Object.values(circle_array[i])[0];
+                    cur_temp_query.disapplySelectedElements();
+                }
+            }
+            return;
+        }
+
+        $(circle).css('fill', circle_color);
+
+        for(i = 0; i < circle_array.length; i++){
+            if(Object.keys(circle_array[i])[0].replace(/\s/g, '') === circle_color.replace(/\s/g, '')){
+                let cur_temp_query = Object.values(circle_array[i])[0];
+                cur_temp_query.applySelectedElements(Object.keys(circle_array[i])[0].replace(/\s/g, ''));
+            }
+        }
+
+
         let label_name = current.target.innerText;
         // console.log(ContentFrame.findElementInContentFrame('#delete_label_id', '#webdataview-floating-widget').length);
         for(i = 0; i < appendbox.length; i++){
@@ -946,6 +1217,7 @@ let appendbox = [];
         }
         appendbox = [];
         appendbox.push(labelId);
+
 
         let widget_delete_label = new ContentFrame({
             'id': labelId,
@@ -969,6 +1241,7 @@ let appendbox = [];
             '</div>');
 
         widget_delete_label.body.append(tooltip_html);
+
         // ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').append('' +
         //     '<li class="widget-labels-li" id = '+ labelId +'> ' +
         //     '<svg class="widget-label-circle-svg" height="10" width="10"> ' +

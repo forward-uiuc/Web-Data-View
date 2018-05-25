@@ -28,6 +28,7 @@ let widget_iframe_cf = new ContentFrame({
 });
 let widget_iframe = widget_iframe_cf.body;
 let port_tb = chrome.runtime.connect({name: "tbtb"});
+let circle_array = [];
 chrome.storage.local.set({'value': []});
 
 /**
@@ -146,13 +147,20 @@ $(document).ready(function(){
                             e.preventDefault();
                             mySet.clear();
                             click_flag = false;
-                            if(Object.keys(cur_query).length === 1){
+                            if(Object.keys(cur_query).length === 3){  //fixed when clicking apply, red box problem
                                 for(d = 0; d < apply_array.length; d++) {
                                     apply_array[d].style.outline = '2px solid ' + cccccc;
                                 }
+                                let temp = {};
+                                temp[cccccc] = cur_query;
+                                circle_array.push(temp);
                             }
                             else{
                                 cur_query.applySelectedElements(tooltip_color);
+                                let temp = {};
+                                temp[tooltip_color] = cur_query;
+                                circle_array.push(temp);
+
                                 let n = {'label':field_label};
                                 n['query'] = JSON.parse(cur_query.toJSON());
                                 cur_web_noti = new WebDataExtractionNotation(n);
