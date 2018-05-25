@@ -80,7 +80,12 @@ class TestTooltip {
 
             // Filter by number of words in text
             '<br><input type="checkbox" id="filter_numwords" name="subscribe" value="0">'+
-            '<label for="subscribeNews">Filter by NumWords</label>  <select id="filter_numwords_parameter" value="1"><option value="0.0">0.0</option><option value="0.1">0.1</option><option value="0.2">0.2</option> <option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1.0">1.0</option></select>'+
+            '<label for="subscribeNews">Filter by NumWords</label>  <select id="filter_numwords_parameter" value="1"><option value="0.0">0.0</option><option value="0.1">0.1</option><option value="0.2">0.2</option> <option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7" selected>0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1.0">1.0</option></select>'+
+            //////////////////////////////////////////////////////////
+
+            // Filter by content similarity
+            '<br><input type="checkbox" id="filter_contentsimilarity" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by Similarity</label>  <select id="filter_contentsimilarity_parameter" value="1"><option value="0.0">0.0</option><option value="0.1">0.1</option><option value="0.2" selected>0.2</option> <option value="0.3">0.3</option><option value="0.4">0.4</option><option value="0.5">0.5</option><option value="0.6">0.6</option><option value="0.7">0.7</option><option value="0.8">0.8</option><option value="0.9">0.9</option><option value="1.0">1.0</option></select>'+
             //////////////////////////////////////////////////////////
 
             '<br><input type="checkbox" id="filter_fontsize" name="subscribe" value="0">'+
@@ -361,16 +366,9 @@ class TestTooltip {
                     cur.value = "1";
                     mySet.add("filter_numwords");
                     let parameter = ContentFrame.findElementInContentFrame('#filter_numwords_parameter', '#webview-tooltip').val();
-                    let lower_bound = parameter * jQuery(referenceElement).text().split(' ').length;
-                    let upper_bound = (parseFloat(parameter)+1) * jQuery(referenceElement).text().split(' ').length;
-                    console.log("textLength: ", jQuery(referenceElement).text().split(' ').length);
-                    console.log("parameter: ", parameter);
-                    console.log("+1: ", parseFloat(parameter)+1);
-                    console.log("lower: ", lower_bound);
-                    console.log("upper: ", upper_bound);
-                    // let target_num = jQuery(referenceElement).text().split(' ');
-                    // console.log(target_prefix);
-                    // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
+                    let num = jQuery(referenceElement).text().split(' ').length;
+                    let lower_bound = parseFloat(parameter) * num;
+                    let upper_bound = (num - lower_bound) + num;
                     cur_query.jQuerySelector["filter_numwords"] = function() {
                         return $(this).text().split(' ').length >= lower_bound && $(this).text().split(' ').length <= upper_bound;
                     };
@@ -387,6 +385,87 @@ class TestTooltip {
 
         ///////////////
 
+
+
+
+        ///////////////
+
+        ContentFrame.findElementInContentFrame('#filter_contentsimilarity', '#webview-tooltip').click(function(e) {
+            console.log("text: ", referenceElement.textContent);
+            if (referenceElement.textContent === '' || referenceElement.textContent === undefined) {
+                alert("Selected element has no text!");
+                ContentFrame.findElementInContentFrame('#filter_contentsimilarity', '#webview-tooltip').prop("checked", false);
+                return;
+            }
+            let cur = e.target;
+            if(cur.value === "0"){  //Add model to collection
+                cur.value = "1";
+                mySet.add("filter_contentsimilarity");
+                let parameter = ContentFrame.findElementInContentFrame('#filter_contentsimilarity_parameter', '#webview-tooltip').val();
+                let target_text = jQuery(referenceElement).text().split(' ');
+
+                // Count word occurrences of text in target element
+                let target_occurrences = {};
+                for (let i = 0; i < target_text.length; i++) {
+                  let temp = target_text[i];
+                  target_occurrences[temp] = target_occurrences[temp] ? target_occurrences[temp] + 1 : 1;
+                }
+                // Calculate cosine similarity
+                cur_query.jQuerySelector["filter_contentsimilarity"] = function() {
+                    let cosine_similarity = 0.0;
+                    let current_text = $(this).text().split(' ');
+                    let set1 = new Set(target_text)
+                    let set2 = new Set(current_text);
+                    let intersection = new Set([...set1].filter(i => set2.has(i)));
+
+                    // Count word occurrences of text in current element
+                    let current_occurrences = {};
+                    for (let i = 0; i < current_text.length; i++) {
+                      let temp = current_text[i];
+                      current_occurrences[temp] = current_occurrences[temp] ? current_occurrences[temp] + 1 : 1;
+                    }
+
+                    // Calulator the numerator and the denominator of cosine similarity
+                    let numerator = 0.0;
+                    let denominator = 0.0;
+                    let sum1 = 0.0;
+                    let sum2 = 0.0;
+                    if(intersection.size != 0){
+                        for(let element of intersection) {
+                            numerator += target_occurrences[element] * current_occurrences[element];
+                        }
+                    }
+                    else{
+                        cosine_similarity = 0.0;
+                    }
+
+                    let occ1 = Object.values(target_occurrences);
+                    let occ2 = Object.values(current_occurrences);
+                    for (let i = 0; i < occ1.length; i++) {
+                        sum1 += Math.pow(occ1[i],2);
+                    }
+                    for (let i = 0; i < occ2.length; i++) {
+                        sum2 += Math.pow(occ2[i],2);
+                    }
+                    denominator = Math.sqrt(sum1) * Math.sqrt(sum2);
+                    if(denominator != 0){
+                        cosine_similarity = numerator / denominator;
+                    }
+
+                    return cosine_similarity >= parameter;
+                };
+                helper(referenceElement, cur_query, 0);
+            }
+            else{  //Take model off collection
+                cur.value = "0";
+                mySet.delete("filter_numwords");
+                delete cur_query.jQuerySelector["filter_numwords"];
+                helper(referenceElement, cur_query, 1);
+            } 
+
+        });
+
+        ///////////////
 
 
 
