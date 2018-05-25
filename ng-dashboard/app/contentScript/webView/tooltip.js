@@ -20,6 +20,7 @@
  */
 
 let selectionExpansion = [];
+let prev_color_to_class_idx = [];
 let selectionExpansionIdx = 0;
 
 let COLORS = ["(2,63,165)","(125,135,185)","(190,193,212)","(214,188,192)","(187,119,132)","(142,6,59)","(74,111,227)","(133,149,225)","(181,187,227)","(230,175,185)","(224,123,145)","(211,63,106)","(17,198,56)","(141,213,147)","(198,222,199)","(234,211,198)","(240,185,141)","(239,151,8)","(15,207,192)","(156,222,214)","(213,234,231)","(243,225,235)","(246,196,225)","(247,156,212)"];
@@ -97,9 +98,9 @@ class TestTooltip {
             '<label for="subscribeNews">Filter by Width</label>' +
             '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Height</label>' +
-            '<br><input type="checkbox" id="filter_alignleft" name="subscribe" value="0">'+
+            // '<br><input type="checkbox" id="filter_alignleft" name="subscribe" value="0">'+
             // '<label for="subscribeNews">Old Filter by Left Alignment</label>' +
-            // '<br><input type="checkbox" id="filter_xpath" name="subscribe" value="0">'+
+            '<br><input type="checkbox" id="filter_xpath" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by XPath</label>' +
             '<br><input type="checkbox" id="filter_left_align_with" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Left Alignment</label>' +
@@ -310,7 +311,7 @@ class TestTooltip {
                         break;
                     }
                 }
-                // console.log(target_tag);
+
                 // cur_query.css = {"fontSize": target_font};
                 cur_query.jQuerySelector["ancesstor_class"] = function() {
                     let cur_prs = $(this).parents();
@@ -609,32 +610,6 @@ class TestTooltip {
             return xpath;
         }
 
-        ContentFrame.findElementInContentFrame('#filter_xpath', '#webview-tooltip').click(function(e) {
-            /**
-             * get xpath of current element
-             * select all elements that have that xpath
-             * add those elements to highlights
-             */
-
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                mySet.add("filter_xpath");
-                let target_xpath = getXPath(referenceElement);
-                console.log(target_xpath);
-                cur_query.jQuerySelector["xpath"] = function() {
-                    return getXPath($(this).get(0)) == target_xpath;
-                };
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                mySet.delete("filter_xpath");
-                delete cur_query.jQuerySelector["xpath"];
-                helper(referenceElement, cur_query, 1);
-            }
-        });
-
         /**
         * get xpath of current element
         * select all elements that have that xpath
@@ -736,6 +711,7 @@ class TestTooltip {
             e.preventDefault();
             if (selectionExpansion.indexOf(referenceElement) == -1) {
                 selectionExpansion = [];
+                prev_color_to_class_idx = [];
                 selectionExpansionIdx = 0;
             }
             // if length of selExpansion is 0, add referenceElement
@@ -749,7 +725,13 @@ class TestTooltip {
             selectionExpansion.push(parent);
             // increment index of selection expansion
             selectionExpansionIdx += 1;
+            // set color to classname mapping same as its child node's
+            referenceElement =  selectionExpansion[selectionExpansionIdx];
+            prev_color_to_class_idx.push(class_to_color_idx[referenceElement.className]);
+            class_to_color_idx[referenceElement.className] = class_to_color_idx[selectionExpansion[0].className];
             // click on indexed selection Expansion
+            cur_query.highlightSelectedElements('none');
+            cur_query = new Query({});
             $(selectionExpansion[selectionExpansionIdx]).trigger("click");
         });
 
@@ -758,6 +740,7 @@ class TestTooltip {
             // if length of selExpansion is 0
             if (selectionExpansion.indexOf(referenceElement) == -1) {
                 selectionExpansion = [];
+                prev_color_to_class_idx = [];
                 selectionExpansionIdx = 0;
             }
 
@@ -767,18 +750,22 @@ class TestTooltip {
 
             selectionExpansionIdx -= 1;
             // click on indexed selection Expansion
-            // console.log("test reduce selection: ", selectionExpansion, selectionExpansionIdx, selectionExpansion[selectionExpansionIdx]);
             if (selectionExpansion[selectionExpansionIdx+1] && selectionExpansion[selectionExpansionIdx+1].style.outline) {
                 // console.log("parent style is not null");
                 selectionExpansion[selectionExpansionIdx+1].style.outline = null;
+                cur_query.highlightSelectedElements('none');
                 if (selectionExpansion[selectionExpansionIdx]) {
                     selectionExpansion[selectionExpansionIdx].style.outline = parentHighlight;
                 }
             }
-            else {
-                // console.log("parent style is false: ", selectionExpansion[selectionExpansionIdx+1].style.outline);
-            }
-            $(selectionExpansion[selectionExpansionIdx]).trigger("click");
+
+            // remove color to classname mapping of its parent
+            class_to_color_idx[referenceElement.className] = prev_color_to_class_idx[prev_color_to_class_idx.length-1];
+            referenceElement =  selectionExpansion[selectionExpansionIdx];
+            // remove from prev color TODO
+            delete prev_color_to_class_idx[prev_color_to_class_idx.length-1];
+            cur_query = new Query({}); 
+            $(referenceElement).trigger("click");
         });
 
         // assign
