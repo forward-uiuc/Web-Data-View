@@ -148,6 +148,7 @@ $(document).ready(function(){
                             mySet.clear();
                             click_flag = false;
                             //if(Object.keys(cur_query).length === 3){  //fixed when clicking apply, red box problem
+                            // The cur_query.isEmpty() fix issues #59. It is more robust than Object.keys(cur_query).length === 3
                             if(cur_query.isEmpty()){    
                                 for(d = 0; d < apply_array.length; d++) {
                                     apply_array[d].style.outline = '2px solid ' + cccccc;
