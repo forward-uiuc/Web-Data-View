@@ -720,7 +720,15 @@ class TestTooltip {
             }
             // get parent of referenceElement
             let parent = $(referenceElement).parent().get(0);
-            // console.log("parent is: ", parent);
+            // console.log("default parent: ", parent);
+            // console.log("h: ", parent.offsetHeight);
+            // console.log("w: ", parent.offsetWidth);
+            while(parent.offsetHeight*parent.offsetWidth < referenceElement.offsetHeight*referenceElement.offsetWidth){
+                parent = $(parent).parent().get(0);
+            }
+            // console.log("modified parent: ", parent);
+            // console.log("h: ", parent.offsetHeight);
+            // console.log("w: ", parent.offsetWidth);
             // add to selection expansion
             selectionExpansion.push(parent);
             // increment index of selection expansion
