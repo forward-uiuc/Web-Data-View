@@ -723,7 +723,7 @@ class TestTooltip {
             // console.log("default parent: ", parent);
             // console.log("h: ", parent.offsetHeight);
             // console.log("w: ", parent.offsetWidth);
-            while(parent.offsetHeight*parent.offsetWidth < referenceElement.offsetHeight*referenceElement.offsetWidth){
+            while(parent.offsetHeight*parent.offsetWidth <= referenceElement.offsetHeight*referenceElement.offsetWidth){
                 parent = $(parent).parent().get(0);
             }
             // console.log("modified parent: ", parent);
