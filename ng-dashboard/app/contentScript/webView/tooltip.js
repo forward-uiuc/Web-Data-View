@@ -23,6 +23,8 @@ let selectionExpansion = [];
 let prev_color_to_class_idx = [];
 let selectionExpansionIdx = 0;
 
+let css_filters = ["font-size", "color", "background-color", "font-style", "font-weight"];
+
 let COLORS = ["(2,63,165)","(125,135,185)","(190,193,212)","(214,188,192)","(187,119,132)","(142,6,59)","(74,111,227)","(133,149,225)","(181,187,227)","(230,175,185)","(224,123,145)","(211,63,106)","(17,198,56)","(141,213,147)","(198,222,199)","(234,211,198)","(240,185,141)","(239,151,8)","(15,207,192)","(156,222,214)","(213,234,231)","(243,225,235)","(246,196,225)","(247,156,212)"];
 shuffle(COLORS);
 let collected_data = [];
@@ -81,15 +83,15 @@ class TestTooltip {
             '<label for="subscribeNews">Filter by Id</label>' +
             '<br><input type="checkbox" id="filter_tag" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Tag name</label>' +
-            '<br><input type="checkbox" id="filter_fontsize" name="subscribe" value="0">'+
+            '<br><input type="checkbox" id="filter_font-size" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Fontsize</label>' +
-            '<br><input type="checkbox" id="filter_fontcolor" name="subscribe" value="0">'+
+            '<br><input type="checkbox" id="filter_color" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Fontcolor</label>' +
-            '<br><input type="checkbox" id="filter_backcolor" name="subscribe" value="0">'+
+            '<br><input type="checkbox" id="filter_background-color" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Bg-color</label>' +
-            '<br><input type="checkbox" id="filter_style" name="subscribe" value="0">'+
+            '<br><input type="checkbox" id="filter_font-style" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Font-style</label>' +
-            '<br><input type="checkbox" id="filter_weight" name="subscribe" value="0">'+
+            '<br><input type="checkbox" id="filter_font-weight" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Font-weight</label>' +
             // '<br><input type="checkbox" id="filter_child" name="subscribe" value="0">' +
             // '<label for="subscribeNews">Remove Parent Element</label>' +
@@ -122,6 +124,7 @@ class TestTooltip {
             if (msg.question === "feedback"){
                 let data = msg.data;
                 let stored_query = data.output;
+                let k = (145+(stored_query.length-2)*25).toString() + 'px';
                 let noti_question = ContentFrame.findElementInContentFrame('#question', '#webview-note');
                 let noti_accept = ContentFrame.findElementInContentFrame('#note_accept', '#webview-note');
                 let noti_reject = ContentFrame.findElementInContentFrame('#note_reject', '#webview-note');
@@ -215,18 +218,19 @@ class TestTooltip {
          */
         function helper(referenceElement, cur_query, flag_val){
             if(flag_val === 0){
-                collected_data = [];
                 tooltip_color = "rgb" + COLORS[class_to_color_idx[referenceElement.className]]; // classname to color
                 cur_query.highlightSelectedElements(tooltip_color);
                 field_label = ntc.name(rgb2hex(tooltip_color))[1]; //any color -> close name to it
                 fieldname_color[field_label] = tooltip_color;
                 let dom_elements = cur_query.execute();
+                console.log(dom_elements);
                 let data_to_push = null;
                 for(let i = 0; i < dom_elements.length; i++){
                     data_to_push = {};  //dic label name ->
                     data_to_push[field_label] = dom_elements[i];
                     collected_data.push(data_to_push);
                 }
+                console.log(collected_data);
             }
             else{
                 cur_query.highlightSelectedElements(tooltip_color);
@@ -344,115 +348,143 @@ class TestTooltip {
             }
         });
 
-        ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').click(function(e) {
-            if(jQuery(referenceElement).css("font-size") === '' || jQuery(referenceElement).css("font-size") === undefined ){
-                alert("This element has no Font-Size attribute!");
-                ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_fontsize");
-                let target_font = jQuery(referenceElement).css("font-size");
-                cur_query.css["fontSize"]= target_font;
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_fontsize");
-                delete cur_query.css["fontSize"];
-                helper(referenceElement, cur_query, 1);
-            }
-        });
+        function filterByCSS(property) {
+            ContentFrame.findElementInContentFrame("#filter_" + property, '#webview-tooltip').click(function(e) {
+                console.log("filter by " + property);
+                if(jQuery(referenceElement).css(property) === '' || jQuery(referenceElement).css(property) === undefined ){
+                    alert("This element has no " + property + " attribute!");
+                    ContentFrame.findElementInContentFrame('#filter_' + property, '#webview-tooltip').attr("disabled","true");
+                    return;
+                }
+                let cur = e.target;
+                if(cur.value === "0"){  //Add model to collection
+                    cur.value = "1";
+                    currentFilters.add(property);
+                    let target_prop = jQuery(referenceElement).css(property);
+                    cur_query.css[property]= target_prop;
+                    helper(referenceElement, cur_query, 0);
+                }
+                else{  //Take model off collection
+                    cur.value = "0";
+                    currentFilters.delete(property);
+                    delete cur_query.css[property];
+                    helper(referenceElement, cur_query, 1);
+                }
+            });
+        }
 
-        ContentFrame.findElementInContentFrame('#filter_fontcolor', '#webview-tooltip').click(function(e) {
-            if(jQuery(referenceElement).css("color") === '' || jQuery(referenceElement).css("color") === undefined ){
-                alert("This element has no Font-Color attribute!");
-                ContentFrame.findElementInContentFrame('#filter_fontcolor', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_fontcolor");
-                let target_fontcolor = jQuery(referenceElement).css("color");
-                cur_query.css["color"] = target_fontcolor;
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_fontcolor");
-                delete cur_query.css["color"];
-                helper(referenceElement, cur_query, 1);
-            }
-        });
-
-        ContentFrame.findElementInContentFrame('#filter_backcolor', '#webview-tooltip').click(function(e) {
-            if(jQuery(referenceElement).css("background-color") === '' || jQuery(referenceElement).css("background-color") === undefined ){
-                alert("This element has no Background-Color attribute!");
-                ContentFrame.findElementInContentFrame('#filter_backcolor', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_backcolor");
-                let target_backcolor = jQuery(referenceElement).css("background-color");
-                cur_query.css["background-color"]= target_backcolor;
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_backcolor");
-                delete cur_query.css["background-color"];
-                helper(referenceElement, cur_query, 1);
-            }
-        });
-
-        ContentFrame.findElementInContentFrame('#filter_style', '#webview-tooltip').click(function(e) {
-            if(jQuery(referenceElement).css("font-style") === '' || jQuery(referenceElement).css("font-style") === undefined ){
-                alert("This element has no Font-Style attribute!");
-                ContentFrame.findElementInContentFrame('#filter_style', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_style");
-                let target_style = jQuery(referenceElement).css("font-style");
-                cur_query.css["font-style"]=target_style;
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_style");
-                delete cur_query.css["font-style"];
-                helper(referenceElement, cur_query, 1);
-            }
-        });
-
-        ContentFrame.findElementInContentFrame('#filter_weight', '#webview-tooltip').click(function(e) {
-            if(jQuery(referenceElement).css("font-weight") === '' || jQuery(referenceElement).css("font-weight") === undefined ){
-                alert("This element has no Font-Weight attribute!");
-                ContentFrame.findElementInContentFrame('#filter_weight', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_weight");
-                let target_weight = jQuery(referenceElement).css("font-weight");
-                cur_query.css["font-weight"]= target_weight;
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_weight");
-                delete cur_query.css["font-weight"];
-                helper(referenceElement, cur_query, 1);
-            }
-        });
+        for (i = 0, len = css_filters.length; i < len; i++) {
+            filterByCSS(css_filters[i]);
+        }
+        // ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').click(function(e) {
+        //     if(jQuery(referenceElement).css("font-size") === '' || jQuery(referenceElement).css("font-size") === undefined ){
+        //         alert("This element has no Font-Size attribute!");
+        //         ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').attr("disabled","true");
+        //         return;
+        //     }
+        //     let cur = e.target;
+        //     if(cur.value === "0"){  //Add model to collection
+        //         cur.value = "1";
+        //         currentFilters.add("filter_fontsize");
+        //         let target_font = jQuery(referenceElement).css("font-size");
+        //         cur_query.css["fontSize"]= target_font;
+        //         helper(referenceElement, cur_query, 0);
+        //     }
+        //     else{  //Take model off collection
+        //         cur.value = "0";
+        //         currentFilters.delete("filter_fontsize");
+        //         delete cur_query.css["fontSize"];
+        //         helper(referenceElement, cur_query, 1);
+        //     }
+        // });
+        //
+        // ContentFrame.findElementInContentFrame('#filter_fontcolor', '#webview-tooltip').click(function(e) {
+        //     if(jQuery(referenceElement).css("color") === '' || jQuery(referenceElement).css("color") === undefined ){
+        //         alert("This element has no Font-Color attribute!");
+        //         ContentFrame.findElementInContentFrame('#filter_fontcolor', '#webview-tooltip').attr("disabled","true");
+        //         return;
+        //     }
+        //     let cur = e.target;
+        //     if(cur.value === "0"){  //Add model to collection
+        //         cur.value = "1";
+        //         currentFilters.add("filter_fontcolor");
+        //         let target_fontcolor = jQuery(referenceElement).css("color");
+        //         cur_query.css["color"] = target_fontcolor;
+        //         helper(referenceElement, cur_query, 0);
+        //     }
+        //     else{  //Take model off collection
+        //         cur.value = "0";
+        //         currentFilters.delete("filter_fontcolor");
+        //         delete cur_query.css["color"];
+        //         helper(referenceElement, cur_query, 1);
+        //     }
+        // });
+        //
+        // ContentFrame.findElementInContentFrame('#filter_backcolor', '#webview-tooltip').click(function(e) {
+        //     if(jQuery(referenceElement).css("background-color") === '' || jQuery(referenceElement).css("background-color") === undefined ){
+        //         alert("This element has no Background-Color attribute!");
+        //         ContentFrame.findElementInContentFrame('#filter_backcolor', '#webview-tooltip').attr("disabled","true");
+        //         return;
+        //     }
+        //     let cur = e.target;
+        //     if(cur.value === "0"){  //Add model to collection
+        //         cur.value = "1";
+        //         currentFilters.add("filter_backcolor");
+        //         let target_backcolor = jQuery(referenceElement).css("background-color");
+        //         cur_query.css["background-color"]= target_backcolor;
+        //         helper(referenceElement, cur_query, 0);
+        //     }
+        //     else{  //Take model off collection
+        //         cur.value = "0";
+        //         currentFilters.delete("filter_backcolor");
+        //         delete cur_query.css["background-color"];
+        //         helper(referenceElement, cur_query, 1);
+        //     }
+        // });
+        //
+        // ContentFrame.findElementInContentFrame('#filter_style', '#webview-tooltip').click(function(e) {
+        //     if(jQuery(referenceElement).css("font-style") === '' || jQuery(referenceElement).css("font-style") === undefined ){
+        //         alert("This element has no Font-Style attribute!");
+        //         ContentFrame.findElementInContentFrame('#filter_style', '#webview-tooltip').attr("disabled","true");
+        //         return;
+        //     }
+        //     let cur = e.target;
+        //     if(cur.value === "0"){  //Add model to collection
+        //         cur.value = "1";
+        //         currentFilters.add("filter_style");
+        //         let target_style = jQuery(referenceElement).css("font-style");
+        //         cur_query.css["font-style"]=target_style;
+        //         helper(referenceElement, cur_query, 0);
+        //     }
+        //     else{  //Take model off collection
+        //         cur.value = "0";
+        //         currentFilters.delete("filter_style");
+        //         delete cur_query.css["font-style"];
+        //         helper(referenceElement, cur_query, 1);
+        //     }
+        // });
+        //
+        // ContentFrame.findElementInContentFrame('#filter_weight', '#webview-tooltip').click(function(e) {
+        //     if(jQuery(referenceElement).css("font-weight") === '' || jQuery(referenceElement).css("font-weight") === undefined ){
+        //         alert("This element has no Font-Weight attribute!");
+        //         ContentFrame.findElementInContentFrame('#filter_weight', '#webview-tooltip').attr("disabled","true");
+        //         return;
+        //     }
+        //     let cur = e.target;
+        //     if(cur.value === "0"){  //Add model to collection
+        //         cur.value = "1";
+        //         currentFilters.add("filter_weight");
+        //         let target_weight = jQuery(referenceElement).css("font-weight");
+        //         cur_query.css["font-weight"]= target_weight;
+        //         helper(referenceElement, cur_query, 0);
+        //     }
+        //     else{  //Take model off collection
+        //         cur.value = "0";
+        //         currentFilters.delete("filter_weight");
+        //         delete cur_query.css["font-weight"];
+        //         helper(referenceElement, cur_query, 1);
+        //     }
+        // });
 
         ContentFrame.findElementInContentFrame('#filter_width', '#webview-tooltip').click(function(e) {
             let cur = e.target;
@@ -815,16 +847,22 @@ function greeting(name) {
         hover_message = hover_message + name.attr('id');
         hover_message = hover_message + "\n";
     }
-    if(currentFilters.has("filter_fontsize")){
-        hover_message = hover_message + " Fontsize: ";
-        hover_message = hover_message + name.css("font-size");
-        hover_message = hover_message + "\n";
+    for (i = 0, len = css_filters.length; i < len; i++) {
+        let prop = css_filters[i];
+        if (currentFilters.has(prop)) {
+            hover_message = hover_message + " " + prop + ": " + name.css(prop) + "\n";
+        }
     }
-    if(currentFilters.has("filter_fontcolor")){
-        hover_message = hover_message + " Fontcolor: ";
-        hover_message = hover_message + name.css("color");
-        hover_message = hover_message + "\n";
-    }
+    // if(currentFilters.has("filter_fontsize")){
+    //     hover_message = hover_message + " Fontsize: ";
+    //     hover_message = hover_message + name.css("font-size");
+    //     hover_message = hover_message + "\n";
+    // }
+    // if(currentFilters.has("filter_fontcolor")){
+    //     hover_message = hover_message + " Fontcolor: ";
+    //     hover_message = hover_message + name.css("color");
+    //     hover_message = hover_message + "\n";
+    // }
     // name.prop('title', hover_message);
 }
 
