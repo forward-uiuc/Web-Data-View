@@ -31,7 +31,7 @@ let field_label =  null;
 labels_list = [];
 let parent_collected = [];
 let cap_counter = 0;
-let mySet = new Set();
+let currentFilters = new Set();
 let tooltip_color =  null;
 let cccccc =  null;
 let cur_query = new Query({});
@@ -39,11 +39,10 @@ let cur_web_noti = null;
 let apply_array = [];
 let click_flag = false;
 let port = chrome.runtime.connect({name: "knockknock"});
-// port.postMessage({answer: "pre check", domain_name: location.href});
 setTimeout(function(){port.postMessage({answer: "pre check", domain_name: location.href});}, 1000);
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if (request.greeting == "toggled"){
+        if (request.greeting === "toggled"){
             $('#webview-query').toggle();
             $('#webdataview-floating-widget').toggle();
         }
@@ -65,7 +64,7 @@ class TestTooltip {
             'css': ['lib/font-awesome/css/font-awesome.css', 'lib/bootstrap/css/bootstrap.3.3.7.min.css'],
             'js': ['app/contentScript/webView/tooltipHandler.js'],
             'inlineCss':  {"width": "140px", "height": "40px", "z-index": 2147483640, "border": "none", "border-radius": 6, "overflow": "visible", "display": "display"}
-    });
+        });
         let tooltip_html = $.parseHTML('<div class="webdataview" id="webdataview_id" style="background-color: ' + color + '; width: 100%; height: auto; overflow: visible; z-index: 2147483647 !important; ">' +
             // '<i class="fa fa-tag fa-fw-lg" id="web-view-assign-label" style="margin-left: 15px"></i> ' +
             // '<i class="fa fa-object-group fa-fw-lg" id="web-view-select-similar" style="color: black;"></i>' +
@@ -75,9 +74,9 @@ class TestTooltip {
             '<i class="fa fa-angle-double-down fa-fw-lg" id="cap_toggle"  style="color: black; font-weight: 100;" title="Select Capabilities"></i>' +
             '<br><div id="cap_target" style="display: none;">' +
             '<input type="checkbox" id="filter_class" name="subscribe" value="0">'+
-            '<label for="subscr ibeNews">Filter by ClassName</label>' +
-            '<br><input type="checkbox" id="filter_ancesstor_class" name="subscribe" value="0">'+
-            '<label for="subscr ibeNews">Filter by AncestorClass</label>' +
+            '<label for="subscribeNews">Filter by ClassName</label>' +
+            '<br><input type="checkbox" id="filter_ancestor_class" name="subscribe" value="0">'+
+            '<label for="subscribeNews">Filter by AncestorClass</label>' +
             '<br><input type="checkbox" id="filter_id" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Id</label>' +
             '<br><input type="checkbox" id="filter_tag" name="subscribe" value="0">'+
@@ -110,36 +109,19 @@ class TestTooltip {
             '<label for="subscribeNews">Filter by Prefix </label> <select id="filter_prefix_num" value="1"><option value="1">1</option><option value="2">2</option> <option value="3">3</option><option value="4">4</option></select>' +
             '<br><input type="checkbox" id="filter_suffix" name="subscribe" value="0">'+
             '<label for="subscribeNews">Filter by Suffix </label> <select id="filter_suffix_num" value="1"><option value="1">1</option><option value="2">2</option> <option value="3">3</option><option value="4">4</option></select>' +
-            // '<br><input type="checkbox" id="filter_height" name="subscribe" value="0">'+
-            // '<label for="subscribeNews">Filter by Height</label>' +
-            // '<br><input type="checkbox" id="filter_width" name="subscribe" value="0">'+
-            // '<label for="subscribeNews">Filter by Width</label>' +
             '</div>'+
             '</div>');
         cf.body.append(tooltip_html);
 
         window.onbeforeunload = function(e) {
             e.preventDefault();
-            // if($username !== undefined) {
-            //     port.postMessage({answer: "leave", username: $username, domain_name: location.hostname});
-            // }
             port.postMessage({answer: "exit", domain_name: location.href});
-            // chrome.storage.sync.get("value", function(items) {
-            //     if (!chrome.runtime.error) {
-            //         let array = items["value"];
-            //         port.postMessage({answer: "leave", domain_name: location.href, capa: array});
-            //     }
-            // });
         };
 
         port.onMessage.addListener(function(msg) {
             if (msg.question === "feedback"){
                 let data = msg.data;
                 let stored_query = data.output;
-                let k = (145+(stored_query.length-2)*25).toString() + 'px';
-                // console.log( ContentFrame.findElementInContentFrame('#webview-note', '#webview-note'));
-                // ContentFrame.findElementInContentFrame('#webview-note', '#webview-note').css('height', k);
-
                 let noti_question = ContentFrame.findElementInContentFrame('#question', '#webview-note');
                 let noti_accept = ContentFrame.findElementInContentFrame('#note_accept', '#webview-note');
                 let noti_reject = ContentFrame.findElementInContentFrame('#note_reject', '#webview-note');
@@ -179,9 +161,6 @@ class TestTooltip {
                             collected_data.push(data_to_push);
                         }
                     }
-                    // let new_desp_html = $.parseHTML(' <textarea style="height: 90px;" class="form-control" id="messageDesc" >'+ stored_query[index_pos].query_text +'</textarea>');
-                    // ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').replaceWith(new_desp_html);
-
                 }
                 ContentFrame.findElementInContentFrame('#note_result', '#webview-note').click(function(e) {
                     e.preventDefault();
@@ -224,8 +203,19 @@ class TestTooltip {
             }
         });
 
+        /**
+         * Helper function that:
+         * highlights the selected element
+         * decides label name and color
+         * executes the query (do the filtering)
+         * pushes data to collected_data
+         * @param referenceElement
+         * @param cur_query
+         * @param flag_val flag value to indicate if a filter is selected
+         */
         function helper(referenceElement, cur_query, flag_val){
             if(flag_val === 0){
+                collected_data = [];
                 tooltip_color = "rgb" + COLORS[class_to_color_idx[referenceElement.className]]; // classname to color
                 cur_query.highlightSelectedElements(tooltip_color);
                 field_label = ntc.name(rgb2hex(tooltip_color))[1]; //any color -> close name to it
@@ -252,28 +242,6 @@ class TestTooltip {
             }
         }
 
-        // ContentFrame.findElementInContentFrame('#filter_left', '#webview-tooltip').click(function(e) {
-        //     if(jQuery(referenceElement).offset().left === '' || jQuery(referenceElement).offset().left === undefined ){
-        //         alert("This element has no left offset!");
-        //         ContentFrame.findElementInContentFrame('#filter_left', '#webview-tooltip').attr("disabled","true");
-        //         return;
-        //     }
-        //     let cur = e.target;
-        //     if(cur.value === "0"){  //Add model to collection
-        //         cur.value = "1";
-        //         mySet.add("filter_left");
-        //         let target_weight = jQuery(referenceElement).css("font-weight");
-        //         cur_query.css = {"font-weight": target_weight};
-        //         helper(referenceElement, cur_query, 0);
-        //     }
-        //     else{  //Take model off collection
-        //         cur.value = "0";
-        //         mySet.delete("filter_left");
-        //         delete cur_query.css["font-weight"];
-        //         helper(referenceElement, cur_query, 1);
-        //     }
-        // });
-
         ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').click(function(e) {
             if (referenceElement.className === '' || referenceElement.className === undefined) {
                 alert("This element has no Class attribute!");
@@ -283,7 +251,7 @@ class TestTooltip {
             let cur = e.target;
             if (cur.value === "0") {  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_class");
+                currentFilters.add("filter_class");
 
                 let target_class = referenceElement.className;
                 cur_query.class = target_class;
@@ -292,17 +260,17 @@ class TestTooltip {
 
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_class");
+                currentFilters.delete("filter_class");
                 cur_query.class = false;
                 helper(referenceElement, cur_query, 1);
             }
         });
 
-        ContentFrame.findElementInContentFrame('#filter_ancesstor_class', '#webview-tooltip').click(function(e) {
+        ContentFrame.findElementInContentFrame('#filter_ancestor_class', '#webview-tooltip').click(function(e) {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_ancesstor_class");
+                currentFilters.add("filter_ancestor_class");
                 let prs = $(referenceElement).parents();
                 let target_tag = "";
                 for (let i = 0; i < prs.length; i++) {
@@ -312,8 +280,7 @@ class TestTooltip {
                     }
                 }
 
-                // cur_query.css = {"fontSize": target_font};
-                cur_query.jQuerySelector["ancesstor_class"] = function() {
+                cur_query.jQuerySelector["ancestor_class"] = function() {
                     let cur_prs = $(this).parents();
                     let cur_tag = "";
                     for (let i = 0; i < cur_prs.length; i++) {
@@ -328,8 +295,8 @@ class TestTooltip {
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_ancesstor_class");
-                delete cur_query.jQuerySelector["ancesstor_class"];
+                currentFilters.delete("filter_ancestor_class");
+                delete cur_query.jQuerySelector["ancestor_class"];
                 helper(referenceElement, cur_query, 1);
             }
         });
@@ -343,7 +310,7 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_id");
+                currentFilters.add("filter_id");
 
                 let target_id = referenceElement.id;
                 cur_query.id = target_id;
@@ -352,7 +319,7 @@ class TestTooltip {
 
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_id");
+                currentFilters.delete("filter_id");
                 cur_query.id = false;
                 helper(referenceElement, cur_query, 1);
             }
@@ -362,9 +329,8 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_tag");
+                currentFilters.add("filter_tag");
                 let target_tag = referenceElement.tagName;
-                // cur_query.css = {"fontSize": target_font};
                 cur_query.jQuerySelector["tagName"] = function() {
                     return this.tagName === target_tag;
                 };
@@ -372,7 +338,7 @@ class TestTooltip {
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_tag");
+                currentFilters.delete("filter_tag");
                 delete cur_query.jQuerySelector["tagName"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -387,15 +353,14 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_fontsize");
+                currentFilters.add("filter_fontsize");
                 let target_font = jQuery(referenceElement).css("font-size");
-                // cur_query.css = {"fontSize": target_font};
                 cur_query.css["fontSize"]= target_font;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_fontsize");
+                currentFilters.delete("filter_fontsize");
                 delete cur_query.css["fontSize"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -410,15 +375,14 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_fontcolor");
+                currentFilters.add("filter_fontcolor");
                 let target_fontcolor = jQuery(referenceElement).css("color");
-                // cur_query.css = {"color": target_fontcolor};
                 cur_query.css["color"] = target_fontcolor;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_fontcolor");
+                currentFilters.delete("filter_fontcolor");
                 delete cur_query.css["color"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -433,14 +397,14 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_backcolor");
+                currentFilters.add("filter_backcolor");
                 let target_backcolor = jQuery(referenceElement).css("background-color");
                 cur_query.css["background-color"]= target_backcolor;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_backcolor");
+                currentFilters.delete("filter_backcolor");
                 delete cur_query.css["background-color"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -455,15 +419,14 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_style");
+                currentFilters.add("filter_style");
                 let target_style = jQuery(referenceElement).css("font-style");
-                // cur_query.css = {"font-style": target_style};
                 cur_query.css["font-style"]=target_style;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_style");
+                currentFilters.delete("filter_style");
                 delete cur_query.css["font-style"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -478,14 +441,14 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_weight");
+                currentFilters.add("filter_weight");
                 let target_weight = jQuery(referenceElement).css("font-weight");
                 cur_query.css["font-weight"]= target_weight;
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_weight");
+                currentFilters.delete("filter_weight");
                 delete cur_query.css["font-weight"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -495,7 +458,7 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_width");
+                currentFilters.add("filter_width");
                 let target_width = jQuery(referenceElement).width();
                 cur_query.jQuerySelector["width"] = function() {
                     return Math.abs($(this).width() - target_width) < 2;
@@ -504,7 +467,7 @@ class TestTooltip {
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_width");
+                currentFilters.delete("filter_width");
                 delete cur_query.jQuerySelector["width"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -514,7 +477,7 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_height");
+                currentFilters.add("filter_height");
                 let target_height = jQuery(referenceElement).height();
                 cur_query.jQuerySelector["height"] = function() {
                     return Math.abs($(this).height() - target_height) < 2;
@@ -523,7 +486,7 @@ class TestTooltip {
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_height");
+                currentFilters.delete("filter_height");
                 delete cur_query.jQuerySelector["height"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -533,7 +496,7 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_alignleft");
+                currentFilters.add("filter_alignleft");
                 let target_left = jQuery(referenceElement).offset().left;
                 cur_query.jQuerySelector["alignleft"] = function() {
                     return Math.abs($(this).offset().left - target_left) < 2;
@@ -542,7 +505,7 @@ class TestTooltip {
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_alignleft");
+                currentFilters.delete("filter_alignleft");
                 delete cur_query.jQuerySelector["alignleft"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -552,10 +515,8 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_prefix");
+                currentFilters.add("filter_prefix");
                 let target_prefix = jQuery(referenceElement).text().split(' ').slice(0,ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val()).join(' ');
-                // console.log(target_prefix);
-                // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
                 cur_query.jQuerySelector["filter_prefix"] = function() {
                     return $(this).text().indexOf(target_prefix) === 0;
                 };
@@ -563,7 +524,7 @@ class TestTooltip {
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_prefix");
+                currentFilters.delete("filter_prefix");
                 delete cur_query.jQuerySelector["filter_prefix"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -573,12 +534,9 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_suffix");
+                currentFilters.add("filter_suffix");
                 let txt = jQuery(referenceElement).text().trim();
                 let target_suffix = txt.split(' ').splice(-ContentFrame.findElementInContentFrame('#filter_suffix_num', '#webview-tooltip').val()).join(' ');
-                // console.log(txt.lastIndexOf(target_suffix));
-                // console.log(txt.length);
-                // console.log(ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val());
                 cur_query.jQuerySelector["filter_suffix"] = function() {
                     let cur_txt = $(this).text().trim()
                     let idx = cur_txt.lastIndexOf(target_suffix);
@@ -588,7 +546,7 @@ class TestTooltip {
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_suffix");
+                currentFilters.delete("filter_suffix");
                 delete cur_query.jQuerySelector["filter_suffix"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -616,12 +574,10 @@ class TestTooltip {
         * add those elements to highlights
         */
         ContentFrame.findElementInContentFrame('#filter_xpath', '#webview-tooltip').click(function(e) {
-
-
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_xpath");
+                currentFilters.add("filter_xpath");
                 let target_xpath = getXPath(referenceElement);
                 console.log("XPath of clicked element is: ", target_xpath);
                 cur_query.jQuerySelector["xpath"] = function() {
@@ -631,7 +587,7 @@ class TestTooltip {
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_xpath");
+                currentFilters.delete("filter_xpath");
                 delete cur_query.jQuerySelector["xpath"];
                 helper(referenceElement, cur_query, 1);
             }
@@ -641,13 +597,13 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_left_align_with");
+                currentFilters.add("filter_left_align_with");
                 cur_query.leftAlignWith = getXPath(referenceElement);
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_left_align_with");
+                currentFilters.delete("filter_left_align_with");
                 delete cur_query.leftAlignWith;
                 helper(referenceElement, cur_query, 1);
             }
@@ -657,13 +613,13 @@ class TestTooltip {
             let cur = e.target;
             if(cur.value === "0"){  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_top_align_with");
+                currentFilters.add("filter_top_align_with");
                 cur_query.topAlignWith = getXPath(referenceElement);
                 helper(referenceElement, cur_query, 0);
             }
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_top_align_with");
+                currentFilters.delete("filter_top_align_with");
                 delete cur_query.topAlignWith;
                 helper(referenceElement, cur_query, 1);
             }
@@ -677,7 +633,7 @@ class TestTooltip {
             let cur = e.target;
             if (cur.value === "0") {  //Add model to collection
                 cur.value = "1";
-                mySet.add("filter_class");
+                currentFilters.add("filter_class");
 
                 let target_class = referenceElement.className;
                 cur_query.class = target_class;
@@ -686,7 +642,7 @@ class TestTooltip {
 
             else{  //Take model off collection
                 cur.value = "0";
-                mySet.delete("filter_class");
+                currentFilters.delete("filter_class");
                 cur_query.class = false;
                 helper(referenceElement, cur_query, 1);
             }
@@ -709,7 +665,7 @@ class TestTooltip {
 
         ContentFrame.findElementInContentFrame('#web-view-expand-selection', '#webview-tooltip').click(function(e) {
             e.preventDefault();
-            if (selectionExpansion.indexOf(referenceElement) == -1) {
+            if (selectionExpansion.indexOf(referenceElement) === -1) {
                 selectionExpansion = [];
                 prev_color_to_class_idx = [];
                 selectionExpansionIdx = 0;
@@ -720,7 +676,6 @@ class TestTooltip {
             }
             // get parent of referenceElement
             let parent = $(referenceElement).parent().get(0);
-            // console.log("parent is: ", parent);
             // add to selection expansion
             selectionExpansion.push(parent);
             // increment index of selection expansion
@@ -738,7 +693,7 @@ class TestTooltip {
         ContentFrame.findElementInContentFrame('#web-view-reduce-selection', '#webview-tooltip').click(function(e) {
             e.preventDefault();
             // if length of selExpansion is 0
-            if (selectionExpansion.indexOf(referenceElement) == -1) {
+            if (selectionExpansion.indexOf(referenceElement) === -1) {
                 selectionExpansion = [];
                 prev_color_to_class_idx = [];
                 selectionExpansionIdx = 0;
@@ -787,7 +742,7 @@ class TestTooltip {
             ContentFrame.findElementInContentFrame('.web-view-assign-color', '#webview-tooltip').click(function(e) {
                 let assigned_color = e.target.style.backgroundColor;
                 let assigned_color_label_name = ntc.name(rgb2hex(assigned_color))[1];
-                if (labels_list.indexOf(assigned_color_label_name) == -1) {
+                if (labels_list.indexOf(assigned_color_label_name) === -1) {
                     appendLabel2Widget(assigned_color_label_name, assigned_color_label_name);
                 }
                 let tooltip_html = $.parseHTML('<div class="webdataview" style="background-color: ' + assigned_color + '; width: 100%; height: 100%">' +
@@ -809,7 +764,7 @@ class TestTooltip {
                         let found = false;
                         let keys = Object.keys(collected_data[j]);
                         keys.forEach(function(key) {
-                            if (collected_data[j][key] == selected_nodes[idx]) {
+                            if (collected_data[j][key] === selected_nodes[idx]) {
                                 collected_data[j][assigned_color_label_name] = collected_data[j][key];
                                 delete collected_data[j][key];
                                 found = true;
@@ -842,7 +797,6 @@ let alignSelectionWithClusterClassFlag = false;
 let used_col_idx = 0;
 let class_to_color_idx = {};
 
-// let TOOLTIP_IDS_ARRAY = ["web-view-select-similar", "web-view-remove"];
 let TOOLTIP_IDS_ARRAY = ["web-view-remove"];
 let prev;
 document.addEventListener("click", selectionHandler, true);
@@ -851,22 +805,22 @@ let css_title = null;
 let css_store = null;
 function greeting(name) {
     let hover_message = "";
-    if(mySet.has("filter_class")){
+    if(currentFilters.has("filter_class")){
         hover_message = hover_message + " className: ";
         hover_message = hover_message + name.attr('class');
         hover_message = hover_message + "\n";
     }
-    if(mySet.has("filter_id")){
+    if(currentFilters.has("filter_id")){
         hover_message = hover_message + " id: ";
         hover_message = hover_message + name.attr('id');
         hover_message = hover_message + "\n";
     }
-    if(mySet.has("filter_fontsize")){
+    if(currentFilters.has("filter_fontsize")){
         hover_message = hover_message + " Fontsize: ";
         hover_message = hover_message + name.css("font-size");
         hover_message = hover_message + "\n";
     }
-    if(mySet.has("filter_fontcolor")){
+    if(currentFilters.has("filter_fontcolor")){
         hover_message = hover_message + " Fontcolor: ";
         hover_message = hover_message + name.css("color");
         hover_message = hover_message + "\n";
@@ -895,8 +849,6 @@ function doWhenEnterDOM(node, count) {
 
 function doWhenExitDOM(node, count) {
     if (node.closest('#webdataview-widget-container').length) return;
-    // console.log(node);
-    // console.log(node.data('wdv_original'));
     if (node.data('wdv_original')!==undefined) {
         if (node.data('wdv_original')['is_selected']===undefined) {
             node.prop('title', node.data('wdv_original')['title']);
@@ -918,7 +870,6 @@ function removeAllSelections() {
 
 $('*').hover(
     function(e){
-        //console.log(e.target);
         // The condition is to prevent the case when moving the mouse too fast
         // that it re-enters the element before finishing the previous entering
         doWhenEnterDOM($(this),0);
@@ -926,10 +877,6 @@ $('*').hover(
         e.stopPropagation();
         return false;
     },function(e){
-        // console.log($(this).css('border'));
-        // console.log($(this).data('wdv_original'));
-        // css_title = $(this).data('wdv_original_title');
-        // css_store = $(this).data('wdv_original_css');
         // The condition is to prevent the case when moving the mouse too fast
         // that it goes out of the element before finishing the previous going out
         doWhenExitDOM($(this),0);
@@ -943,11 +890,10 @@ function selectionHandler(event) {
     if ($(event.target).closest('#webdataview-widget-container').length) return;
     event.preventDefault();
     event.stopPropagation();
-    mySet.clear();
+    currentFilters.clear();
     let event_target = event.target;
     apply_array.push(event_target);
     if (TOOLTIP_IDS_ARRAY.indexOf(event.target.id ) != -1) {
-        // console.log(event.target.id);
         tooltipHandler(event.target.id);
         return;
     }
@@ -981,16 +927,6 @@ function selectionHandler(event) {
     $('#webview-popper-container').remove();
 
     let tooltip_color;
-    // if (event.target.className in class_to_color_idx) {
-    //     tooltip_color = "rgb" + COLORS[class_to_color_idx[event.target.className]];
-    // }
-    // else {
-    //     tooltip_color = "rgb" + COLORS[used_col_idx];
-    //     class_to_color_idx[event.target.className] = used_col_idx;
-    //     used_col_idx = used_col_idx + 1;
-    //     appendLabel2Widget(ntc.name(rgb2hex(tooltip_color))[1], tooltip_color);
-    // }
-    // else {
         if(!click_flag){ //first time click
             click_flag = true;
             class_to_color_idx[event.target.className] = used_col_idx;
@@ -1001,11 +937,10 @@ function selectionHandler(event) {
         else{
             tooltip_color = "rgb" + COLORS[used_col_idx-1];
         }
-    // }
     cccccc = tooltip_color;
     let tip = new TestTooltip(event.target, tooltip_color);
 
-    if (!tooltip_node || event.target.className != tooltip_node.className) {
+    if (!tooltip_node || event.target.className !== tooltip_node.className) {
         for (let i = 0; i < selected_nodes.length; i++) {
             selected_nodes[i].style.outline = "none";
         }
@@ -1172,217 +1107,6 @@ function rgb2hex(rgb){
         ("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
         ("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : '';
 }
-
-let appendbox = [];
- appendLabel2Widget = function(labelName, labelColor) {
-    labels_list.push(labelName);
-    let labelId = labelColor.substring(4, labelColor.length - 1).replace(',','-').replace(',','-');
-    ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').append('' +
-        '<li class="widget-labels-li" id = '+ labelId +'> ' +
-        '<svg class="widget-label-circle-svg" height="10" width="10"> ' +
-        '<circle cx="5" cy="5" r="4" stroke= '+labelColor+' stroke-width="1.5" fill="white" />' +
-        ' </svg>'+ labelName +'</li>');
-
-    ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').find('li#'+labelId).click(function(e) {
-        let current = e;
-        let circle = $(current.target).find('circle')[0];
-        let circle_color = $(circle).css('stroke');
-
-        if($('#'+labelId).length > 0){
-            $(circle).css('fill', "white");
-            $('#'+labelId).remove();
-            for(i = 0; i < circle_array.length; i++){
-                if(Object.keys(circle_array[i])[0].replace(/\s/g, '') === circle_color.replace(/\s/g, '')){
-                    let cur_temp_query = Object.values(circle_array[i])[0];
-                    cur_temp_query.disapplySelectedElements();
-                }
-            }
-            return;
-        }
-
-        $(circle).css('fill', circle_color);
-
-        for(i = 0; i < circle_array.length; i++){
-            if(Object.keys(circle_array[i])[0].replace(/\s/g, '') === circle_color.replace(/\s/g, '')){
-                let cur_temp_query = Object.values(circle_array[i])[0];
-                cur_temp_query.applySelectedElements(Object.keys(circle_array[i])[0].replace(/\s/g, ''));
-            }
-        }
-
-
-        let label_name = current.target.innerText;
-        // console.log(ContentFrame.findElementInContentFrame('#delete_label_id', '#webdataview-floating-widget').length);
-        for(i = 0; i < appendbox.length; i++){
-            $('#'+appendbox[i]).remove();
-        }
-        appendbox = [];
-        appendbox.push(labelId);
-
-
-        let widget_delete_label = new ContentFrame({
-            'id': labelId,
-            'class':'delete_label_class',
-            'appendTo': '#webdataview-floating-widget',
-            'css': ['lib/font-awesome/css/font-awesome.css'],
-            'js': ['app/contentScript/webView/label_delete.js'],
-            'inlineCss': {"width": "200px", "height": "165px", "border": "none", "border-radius": 6,
-                "margin-top": "60px", "background-color": "black",  "position": "fixed", "z-index": 2147483647, "overflow-y": "hidden"}
-        });
-        let tooltip_html = $.parseHTML('<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">' +
-            '<div>' +
-            '<input type="text" name="searchTxt" id="searchTxt" maxlength="10" value="' + label_name + '" />' +
-            '<label for="text"> Change label name here:</label> ' +
-            '<div>'+
-            '<button style="display: inline-block" type="button" class="btn btn-warning" id="label_delete">Delete</button>'+
-            '<button style="display: inline-block" type="button" class="btn btn-info" id="label_change">Change</button><br>' +
-            '<button style="display: inline-block" type="button" class="btn btn-danger" id="label_close">Closed</i></button>' +
-            '<button style="display: inline-block" type="button" class="btn btn-success" id="label_records">Records</i></button>' +
-            '</div>'+
-            '</div>');
-
-        widget_delete_label.body.append(tooltip_html);
-
-        // ContentFrame.findElementInContentFrame('.widget-labels', '#webdataview-widget-iframe').find('ul').append('' +
-        //     '<li class="widget-labels-li" id = '+ labelId +'> ' +
-        //     '<svg class="widget-label-circle-svg" height="10" width="10"> ' +
-        //     '<circle cx="5" cy="5" r="4" stroke= '+ labelColor +' stroke-width="1.5" fill="white" />' +
-        //     ' </svg>'+ 'not working' +'</li>');
-        ContentFrame.findElementInContentFrame('#label_delete', '#'+labelId).click(function(e) {
-            $(current.target).hide();
-            for(d = 0; d < apply_array.length; d++) {
-                apply_array[d].style.outline = null;
-            }
-            apply_array = [];
-            click_flag = false;
-            $('#webview-popper-container').remove();
-            ContentFrame.findElementInContentFrame('#' + e.target.id, '#'+labelId).hide();
-            for(i = 0; i < labels_list.length; i++){
-                if(labels_list[i] === label_name){
-                    labels_list.splice(i, 1);
-                }
-            }
-            let new_collect = [];
-            for(i = 0; i < collected_data.length; i++){
-                if(Object.keys(collected_data[i])[0] === label_name){
-                    continue;
-                }
-                else{
-                    new_collect.push(collected_data[i]);
-                }
-            }
-            $('#'+labelId).remove();
-            collected_data = new_collect;
-            chrome.storage.local.get("value", function(items) {
-                if (!chrome.runtime.error) {
-                    let array = items["value"];
-                    let new_array = [];
-                    for(let i = 0; i < array.length; i++){
-                        let cur_json = JSON.parse(array[i]);
-                        if(cur_json.label !== label_name){
-                            new_array.push(JSON.stringify(cur_json))
-                        }
-                    }
-                    chrome.storage.local.set({'value': new_array});
-                }
-            });
-        });
-
-        let close_action = ContentFrame.findElementInContentFrame('#label_close', '#'+labelId);
-        close_action.click(function(e) {
-            e.preventDefault();
-            $('#'+labelId).remove();
-        });
-        let records_action = ContentFrame.findElementInContentFrame('#label_records', '#'+labelId);
-        records_action.click(function(e) {
-            e.preventDefault();
-
-            records_html = $.parseHTML('<input type="text" name="searchTxt" id="searchTxt" maxlength="10" value="records" />');
-            noti_records = ContentFrame.findElementInContentFrame('#searchTxt', '#'+labelId);
-            noti_records.replaceWith(records_html);
-            let input_label = "records";
-            let old = current.target.innerHTML;
-            let first = old.substring(0, old.lastIndexOf(">")+1);
-            current.target.innerHTML = first + input_label;
-
-            for(i = 0; i < labels_list.length; i++){
-                if(labels_list[i] === label_name){
-                    labels_list[i] = input_label;
-                }
-            }
-            for(i = 0; i < collected_data.length; i++){
-                if(Object.keys(collected_data[i])[0] === label_name){
-                    let new_pair = {};
-                    new_pair[input_label] = Object.values(collected_data[i])[0];
-                    collected_data[i] = new_pair;
-                }
-            }
-
-            chrome.storage.local.get("value", function(items) {
-                if (!chrome.runtime.error){
-                    let array = items["value"];
-                    let new_array = [];
-                    for(let i = 0; i < array.length; i++){
-                        let cur_json = array[i];
-                        if(cur_json.label === label_name){
-                            cur_web_noti.changeLabelName(label_name, input_label);
-                            new_array.push(JSON.stringify(cur_web_noti.toJSON()))
-                        }
-                        else{
-                            new_array.push(cur_json);
-                        }
-                    }
-                    chrome.storage.local.set({'value': new_array});
-                    let new_noti = new WebDataExtractionNotation(JSON.parse(new_array[0])[0]);
-                    console.log(new_noti.matchquery());
-                }
-            });
-        });
-
-        let change_action = ContentFrame.findElementInContentFrame('#label_change','#'+labelId);
-        change_action.click(function(e) {
-            e.preventDefault();
-            let input_label = ContentFrame.findElementInContentFrame('#searchTxt', '#'+labelId);
-            input_label = input_label.get(0).value;
-            let old = current.target.innerHTML;
-            let first = old.substring(0, old.lastIndexOf(">")+1);
-            current.target.innerHTML = first + input_label;
-
-            for(i = 0; i < labels_list.length; i++){
-                if(labels_list[i] === label_name){
-                    labels_list[i] = input_label;
-                }
-            }
-            for(i = 0; i < collected_data.length; i++){
-                if(Object.keys(collected_data[i])[0] === label_name){
-                    let new_pair = {};
-                    new_pair[input_label] = Object.values(collected_data[i])[0];
-                    collected_data[i] = new_pair;
-                }
-            }
-            // if(input_label === "records"){return;}
-
-            chrome.storage.local.get("value", function(items) {
-                if (!chrome.runtime.error){
-                    let array = items["value"];
-                    let new_array = [];
-                    for(let i = 0; i < array.length; i++){
-                        let cur_json = array[i];
-                        if(cur_json.label === label_name){
-                            cur_web_noti.changeLabelName(label_name, input_label);
-                            new_array.push(JSON.stringify(cur_web_noti.toJSON()))
-                        }
-                        else{
-                            new_array.push(cur_json);
-                        }
-                    }
-                    chrome.storage.local.set({'value': new_array});
-                    // let new_noti = new WebDataExtractionNotation(JSON.parse(new_array[0])[0]);
-                    // console.log(new_noti.matchquery());
-                }
-            });
-        });
-    });
-};
 
 /**
  * Shuffles array in place. ES6 version
