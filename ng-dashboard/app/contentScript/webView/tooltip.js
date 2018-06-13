@@ -282,39 +282,24 @@ class TestTooltip {
             return this.className === target_class;
         });
 
-        ContentFrame.findElementInContentFrame('#filter_ancestor_class', '#webview-tooltip').click(function(e) {
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_ancestor_class");
-                let prs = $(referenceElement).parents();
-                let target_tag = "";
-                for (let i = 0; i < prs.length; i++) {
-                    if (prs[i].className != undefined) {
-                        target_tag = prs[i].className;
-                        break;
-                    }
+        addjQuerySelector('#filter_ancestor_class', function () {
+            let prs = $(referenceElement).parents();
+            let target_tag = "";
+            for (let i = 0; i < prs.length; i++) {
+                if (prs[i].className != undefined) {
+                    target_tag = prs[i].className;
+                    break;
                 }
-
-                cur_query.jQuerySelector["ancestor_class"] = function() {
-                    let cur_prs = $(this).parents();
-                    let cur_tag = "";
-                    for (let i = 0; i < cur_prs.length; i++) {
-                        if (cur_prs[i].className != undefined) {
-                            cur_tag = cur_prs[i].className;
-                            break;
-                        }
-                    }
-                    return cur_tag === target_tag;
-                };
-                helper(referenceElement, cur_query, 0);
             }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_ancestor_class");
-                delete cur_query.jQuerySelector["ancestor_class"];
-                helper(referenceElement, cur_query, 1);
+            let cur_prs = $(this).parents();
+            let cur_tag = "";
+            for (let i = 0; i < cur_prs.length; i++) {
+                if (cur_prs[i].className != undefined) {
+                    cur_tag = cur_prs[i].className;
+                    break;
+                }
             }
+            return cur_tag === target_tag;
         });
 
         addjQuerySelector('#filter_id', function () {
