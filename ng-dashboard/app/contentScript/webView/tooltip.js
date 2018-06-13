@@ -708,6 +708,10 @@ class TestTooltip {
             }
             // get parent of referenceElement
             let parent = $(referenceElement).parent().get(0);
+            // parent area should be strictly larger than child area
+            while(parent.offsetHeight*parent.offsetWidth <= referenceElement.offsetHeight*referenceElement.offsetWidth){
+                parent = $(parent).parent().get(0);
+            }
             // add to selection expansion
             selectionExpansion.push(parent);
             // increment index of selection expansion
