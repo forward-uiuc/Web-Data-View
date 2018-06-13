@@ -7,9 +7,7 @@
     <bookmark url="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/widget.html" line="12" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0294df5f-c463-4145-b83d-f6f8836ae4cc" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/tooltip.js" beforeDir="false" afterPath="$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/tooltip.js" afterDir="false" />
-    </list>
+    <list default="true" id="0294df5f-c463-4145-b83d-f6f8836ae4cc" name="Default" comment="remove some unused functions" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -74,8 +72,8 @@
           <file leaf-file-name="query.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/WebDataExtractionNotation/query.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1410">
-                  <caret line="94" column="59" selection-start-line="94" selection-start-column="59" selection-end-line="94" selection-end-column="59" />
+                <state relative-caret-position="146">
+                  <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
                 </state>
               </provider>
             </entry>
@@ -125,7 +123,7 @@
           <file leaf-file-name="tooltip.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/tooltip.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="4706">
+                <state relative-caret-position="1943">
                   <caret line="510" column="13" lean-forward="true" selection-start-line="510" selection-start-column="13" selection-end-line="510" selection-end-column="13" />
                   <folding>
                     <element signature="n#!!doc" expanded="true" />
@@ -408,16 +406,15 @@
       <workItem from="1528091156490" duration="1655000" />
       <workItem from="1528092898738" duration="1757000" />
       <workItem from="1528172040006" duration="7347000" />
-      <workItem from="1528923944972" duration="132000" />
+      <workItem from="1528923944972" duration="364000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="325058000" />
+    <option name="totallyTimeSpent" value="325290000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.2453125" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -511,6 +508,10 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="remove some unused functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove some unused functions" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -692,13 +693,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/WebDataExtractionNotation/query.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1410">
-          <caret line="94" column="59" selection-start-line="94" selection-start-column="59" selection-end-line="94" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/labelMenu.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="750">
@@ -708,7 +702,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/tooltip.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4706">
+        <state relative-caret-position="1943">
           <caret line="510" column="13" lean-forward="true" selection-start-line="510" selection-start-column="13" selection-end-line="510" selection-end-column="13" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
@@ -731,6 +725,13 @@
             <element signature="n#style#0;n#i#1;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#i#2;n#div#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/WebDataExtractionNotation/query.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="146">
+          <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
         </state>
       </provider>
     </entry>

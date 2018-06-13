@@ -247,6 +247,18 @@ class TestTooltip {
         }
 
         function addjQuerySelector(filter_id, selector_callback) {
+            if (filter_id === "#filter_class" && (referenceElement.className === '' || referenceElement.className === undefined)) {
+                alert("This element has no Class attribute!");
+                ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').attr("disabled","true");
+                return;
+            }
+
+            if (filter_id === "#filter_id" && (referenceElement.id === '' || referenceElement.id === undefined)) {
+                alert("This element has no Id attribute!");
+                ContentFrame.findElementInContentFrame('#filter_id', '#webview-tooltip').attr("disabled","true");
+                return;
+            }
+
             let filter_name = filter_id.replace(/^#filter_/, '');
             ContentFrame.findElementInContentFrame(filter_id, '#webview-tooltip').click(function (e) {
                 let cur = e.target;
@@ -266,29 +278,9 @@ class TestTooltip {
             });
         }
 
-
-        ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').click(function(e) {
-            if (referenceElement.className === '' || referenceElement.className === undefined) {
-                alert("This element has no Class attribute!");
-                ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
-            let cur = e.target;
-            if (cur.value === "0") {  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_class");
-
-                let target_class = referenceElement.className;
-                cur_query.class = target_class;
-                helper(referenceElement, cur_query, 0);
-            }
-
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_class");
-                cur_query.class = false;
-                helper(referenceElement, cur_query, 1);
-            }
+        addjQuerySelector('#filter_class', function () {
+            let target_class = referenceElement.className;
+            return this.className === target_class;
         });
 
         ContentFrame.findElementInContentFrame('#filter_ancestor_class', '#webview-tooltip').click(function(e) {
@@ -326,49 +318,17 @@ class TestTooltip {
             }
         });
 
-        ContentFrame.findElementInContentFrame('#filter_id', '#webview-tooltip').click(function(e) {
-            if(referenceElement.id === '' || referenceElement.id === undefined ){
-                alert("This element has no Id attribute!");
-                ContentFrame.findElementInContentFrame('#filter_id', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_id");
-
-                let target_id = referenceElement.id;
-                cur_query.id = target_id;
-                helper(referenceElement, cur_query, 0);
-            }
-
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_id");
-                cur_query.id = false;
-                helper(referenceElement, cur_query, 1);
-            }
+        addjQuerySelector('#filter_id', function () {
+            let target_id = referenceElement.id;
+            return this.id === target_id;
         });
 
-        ContentFrame.findElementInContentFrame('#filter_tag', '#webview-tooltip').click(function(e) {
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_tag");
-                let target_tag = referenceElement.tagName;
-                cur_query.jQuerySelector["tagName"] = function() {
-                    return this.tagName === target_tag;
-                };
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_tag");
-                delete cur_query.jQuerySelector["tagName"];
-                helper(referenceElement, cur_query, 1);
-            }
+        addjQuerySelector('#filter_tag', function () {
+            let target_tag = referenceElement.tagName;
+            return this.tagName === target_tag;
         });
 
+        // CSS filters
         function filterByCSS(property) {
             ContentFrame.findElementInContentFrame("#filter_" + property, '#webview-tooltip').click(function(e) {
                 console.log("filter by " + property);
