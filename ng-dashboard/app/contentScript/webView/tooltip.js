@@ -246,7 +246,13 @@ class TestTooltip {
             }
         }
 
-        function addjQuerySelector(filter_id, selector_callback) {
+        /**
+         * Add handler for filter by jQuerySelector functions.
+         * For consistency, please use jQuerySelector as much as possible.
+         * @param filter_id Id of the filter option
+         * @param selector_callback callback function for jQuerySelector 
+         */
+        function filterByjQuerySelector(filter_id, selector_callback) {
             let filter_name = filter_id.replace(/^#filter_/, '');
             ContentFrame.findElementInContentFrame(filter_id, '#webview-tooltip').click(function (e) {
                 if (filter_id === "#filter_class" && (referenceElement.className === '' || referenceElement.className === undefined)) {
@@ -254,12 +260,12 @@ class TestTooltip {
                     ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').attr("disabled","true");
                     return;
                 }
-
                 if (filter_id === "#filter_id" && (referenceElement.id === '' || referenceElement.id === undefined)) {
                     alert("This element has no Id attribute!");
                     ContentFrame.findElementInContentFrame('#filter_id', '#webview-tooltip').attr("disabled","true");
                     return;
                 }
+                
                 let cur = e.target;
                 if (cur.value === "0") {  //Add model to collection
                     cur.value = "1";
@@ -277,12 +283,12 @@ class TestTooltip {
             });
         }
 
-        addjQuerySelector('#filter_class', function () {
+        filterByjQuerySelector('#filter_class', function () {
             let target_class = referenceElement.className;
             return this.className === target_class;
         });
 
-        addjQuerySelector('#filter_ancestor_class', function () {
+        filterByjQuerySelector('#filter_ancestor_class', function () {
             let prs = $(referenceElement).parents();
             let target_tag = "";
             for (let i = 0; i < prs.length; i++) {
@@ -302,12 +308,12 @@ class TestTooltip {
             return cur_tag === target_tag;
         });
 
-        addjQuerySelector('#filter_id', function () {
+        filterByjQuerySelector('#filter_id', function () {
             let target_id = referenceElement.id;
             return this.id === target_id;
         });
 
-        addjQuerySelector('#filter_tag', function () {
+        filterByjQuerySelector('#filter_tag', function () {
             let target_tag = referenceElement.tagName;
             return this.tagName === target_tag;
         });
@@ -342,22 +348,22 @@ class TestTooltip {
             filterByCSS(css_filters[i]);
         }
 
-        addjQuerySelector('#filter_width', function () {
+        filterByjQuerySelector('#filter_width', function () {
             let target_width = jQuery(referenceElement).width();
             return Math.abs($(this).width() - target_width) < 2;
         });
 
-        addjQuerySelector('#filter_height', function () {
+        filterByjQuerySelector('#filter_height', function () {
             let target_height = jQuery(referenceElement).height();
             return Math.abs($(this).height() - target_height) < 2;
         });
 
-        addjQuerySelector('#filter_prefix', function () {
+        filterByjQuerySelector('#filter_prefix', function () {
             let target_prefix = jQuery(referenceElement).text().split(' ').slice(0,ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val()).join(' ');
             return $(this).text().indexOf(target_prefix) === 0;
         });
 
-        addjQuerySelector('#filter_suffix', function () {
+        filterByjQuerySelector('#filter_suffix', function () {
         	let txt = jQuery(referenceElement).text().trim();
             let target_suffix = txt.split(' ').splice(-ContentFrame.findElementInContentFrame('#filter_suffix_num', '#webview-tooltip').val()).join(' ');
             let cur_txt = $(this).text().trim()
@@ -381,7 +387,7 @@ class TestTooltip {
             return xpath;
         }
 
-        addjQuerySelector('#filter_prefix', function () {
+        filterByjQuerySelector('#filter_prefix', function () {
         	let target_xpath = getXPath(referenceElement);
             return getXPath($(this).get(0)) == target_xpath;
         });
@@ -602,12 +608,12 @@ let css_title = null;
 let css_store = null;
 function greeting(name) {
     let hover_message = "";
-    if(currentFilters.has("filter_class")){
+    if(currentFilters.has("class")){
         hover_message = hover_message + " className: ";
         hover_message = hover_message + name.attr('class');
         hover_message = hover_message + "\n";
     }
-    if(currentFilters.has("filter_id")){
+    if(currentFilters.has("id")){
         hover_message = hover_message + " id: ";
         hover_message = hover_message + name.attr('id');
         hover_message = hover_message + "\n";
