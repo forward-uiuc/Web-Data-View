@@ -246,6 +246,27 @@ class TestTooltip {
             }
         }
 
+        function addjQuerySelector(filter_id, selector_callback) {
+            let filter_name = filter_id.replace(/^#filter_/, '');
+            ContentFrame.findElementInContentFrame(filter_id, '#webview-tooltip').click(function (e) {
+                let cur = e.target;
+                if (cur.value === "0") {  //Add model to collection
+                    cur.value = "1";
+                    currentFilters.add(filter_name);
+                    cur_query.jQuerySelector[filter_name] = selector_callback;
+                    helper(referenceElement, cur_query, 0);
+                }
+
+                else {  //Take model off collection
+                    cur.value = "0";
+                    currentFilters.delete(filter_name);
+                    delete cur_query.jQuerySelector[filter_name];
+                    helper(referenceElement, cur_query, 1);
+                }
+            });
+        }
+
+
         ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').click(function(e) {
             if (referenceElement.className === '' || referenceElement.className === undefined) {
                 alert("This element has no Class attribute!");
@@ -376,212 +397,28 @@ class TestTooltip {
         for (i = 0, len = css_filters.length; i < len; i++) {
             filterByCSS(css_filters[i]);
         }
-        // ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').click(function(e) {
-        //     if(jQuery(referenceElement).css("font-size") === '' || jQuery(referenceElement).css("font-size") === undefined ){
-        //         alert("This element has no Font-Size attribute!");
-        //         ContentFrame.findElementInContentFrame('#filter_fontsize', '#webview-tooltip').attr("disabled","true");
-        //         return;
-        //     }
-        //     let cur = e.target;
-        //     if(cur.value === "0"){  //Add model to collection
-        //         cur.value = "1";
-        //         currentFilters.add("filter_fontsize");
-        //         let target_font = jQuery(referenceElement).css("font-size");
-        //         cur_query.css["fontSize"]= target_font;
-        //         helper(referenceElement, cur_query, 0);
-        //     }
-        //     else{  //Take model off collection
-        //         cur.value = "0";
-        //         currentFilters.delete("filter_fontsize");
-        //         delete cur_query.css["fontSize"];
-        //         helper(referenceElement, cur_query, 1);
-        //     }
-        // });
-        //
-        // ContentFrame.findElementInContentFrame('#filter_fontcolor', '#webview-tooltip').click(function(e) {
-        //     if(jQuery(referenceElement).css("color") === '' || jQuery(referenceElement).css("color") === undefined ){
-        //         alert("This element has no Font-Color attribute!");
-        //         ContentFrame.findElementInContentFrame('#filter_fontcolor', '#webview-tooltip').attr("disabled","true");
-        //         return;
-        //     }
-        //     let cur = e.target;
-        //     if(cur.value === "0"){  //Add model to collection
-        //         cur.value = "1";
-        //         currentFilters.add("filter_fontcolor");
-        //         let target_fontcolor = jQuery(referenceElement).css("color");
-        //         cur_query.css["color"] = target_fontcolor;
-        //         helper(referenceElement, cur_query, 0);
-        //     }
-        //     else{  //Take model off collection
-        //         cur.value = "0";
-        //         currentFilters.delete("filter_fontcolor");
-        //         delete cur_query.css["color"];
-        //         helper(referenceElement, cur_query, 1);
-        //     }
-        // });
-        //
-        // ContentFrame.findElementInContentFrame('#filter_backcolor', '#webview-tooltip').click(function(e) {
-        //     if(jQuery(referenceElement).css("background-color") === '' || jQuery(referenceElement).css("background-color") === undefined ){
-        //         alert("This element has no Background-Color attribute!");
-        //         ContentFrame.findElementInContentFrame('#filter_backcolor', '#webview-tooltip').attr("disabled","true");
-        //         return;
-        //     }
-        //     let cur = e.target;
-        //     if(cur.value === "0"){  //Add model to collection
-        //         cur.value = "1";
-        //         currentFilters.add("filter_backcolor");
-        //         let target_backcolor = jQuery(referenceElement).css("background-color");
-        //         cur_query.css["background-color"]= target_backcolor;
-        //         helper(referenceElement, cur_query, 0);
-        //     }
-        //     else{  //Take model off collection
-        //         cur.value = "0";
-        //         currentFilters.delete("filter_backcolor");
-        //         delete cur_query.css["background-color"];
-        //         helper(referenceElement, cur_query, 1);
-        //     }
-        // });
-        //
-        // ContentFrame.findElementInContentFrame('#filter_style', '#webview-tooltip').click(function(e) {
-        //     if(jQuery(referenceElement).css("font-style") === '' || jQuery(referenceElement).css("font-style") === undefined ){
-        //         alert("This element has no Font-Style attribute!");
-        //         ContentFrame.findElementInContentFrame('#filter_style', '#webview-tooltip').attr("disabled","true");
-        //         return;
-        //     }
-        //     let cur = e.target;
-        //     if(cur.value === "0"){  //Add model to collection
-        //         cur.value = "1";
-        //         currentFilters.add("filter_style");
-        //         let target_style = jQuery(referenceElement).css("font-style");
-        //         cur_query.css["font-style"]=target_style;
-        //         helper(referenceElement, cur_query, 0);
-        //     }
-        //     else{  //Take model off collection
-        //         cur.value = "0";
-        //         currentFilters.delete("filter_style");
-        //         delete cur_query.css["font-style"];
-        //         helper(referenceElement, cur_query, 1);
-        //     }
-        // });
-        //
-        // ContentFrame.findElementInContentFrame('#filter_weight', '#webview-tooltip').click(function(e) {
-        //     if(jQuery(referenceElement).css("font-weight") === '' || jQuery(referenceElement).css("font-weight") === undefined ){
-        //         alert("This element has no Font-Weight attribute!");
-        //         ContentFrame.findElementInContentFrame('#filter_weight', '#webview-tooltip').attr("disabled","true");
-        //         return;
-        //     }
-        //     let cur = e.target;
-        //     if(cur.value === "0"){  //Add model to collection
-        //         cur.value = "1";
-        //         currentFilters.add("filter_weight");
-        //         let target_weight = jQuery(referenceElement).css("font-weight");
-        //         cur_query.css["font-weight"]= target_weight;
-        //         helper(referenceElement, cur_query, 0);
-        //     }
-        //     else{  //Take model off collection
-        //         cur.value = "0";
-        //         currentFilters.delete("filter_weight");
-        //         delete cur_query.css["font-weight"];
-        //         helper(referenceElement, cur_query, 1);
-        //     }
-        // });
 
-        ContentFrame.findElementInContentFrame('#filter_width', '#webview-tooltip').click(function(e) {
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_width");
-                let target_width = jQuery(referenceElement).width();
-                cur_query.jQuerySelector["width"] = function() {
-                    return Math.abs($(this).width() - target_width) < 2;
-                };
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_width");
-                delete cur_query.jQuerySelector["width"];
-                helper(referenceElement, cur_query, 1);
-            }
+        addjQuerySelector('#filter_width', function () {
+            let target_width = jQuery(referenceElement).width();
+            return Math.abs($(this).width() - target_width) < 2;
         });
 
-        ContentFrame.findElementInContentFrame('#filter_height', '#webview-tooltip').click(function(e) {
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_height");
-                let target_height = jQuery(referenceElement).height();
-                cur_query.jQuerySelector["height"] = function() {
-                    return Math.abs($(this).height() - target_height) < 2;
-                };
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_height");
-                delete cur_query.jQuerySelector["height"];
-                helper(referenceElement, cur_query, 1);
-            }
+        addjQuerySelector('#filter_height', function () {
+            let target_height = jQuery(referenceElement).height();
+            return Math.abs($(this).height() - target_height) < 2;
         });
 
-        ContentFrame.findElementInContentFrame('#filter_alignleft', '#webview-tooltip').click(function(e) {
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_alignleft");
-                let target_left = jQuery(referenceElement).offset().left;
-                cur_query.jQuerySelector["alignleft"] = function() {
-                    return Math.abs($(this).offset().left - target_left) < 2;
-                };
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_alignleft");
-                delete cur_query.jQuerySelector["alignleft"];
-                helper(referenceElement, cur_query, 1);
-            }
+        addjQuerySelector('#filter_prefix', function () {
+            let target_prefix = jQuery(referenceElement).text().split(' ').slice(0,ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val()).join(' ');
+            return $(this).text().indexOf(target_prefix) === 0;
         });
 
-        ContentFrame.findElementInContentFrame('#filter_prefix', '#webview-tooltip').click(function(e) {
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_prefix");
-                let target_prefix = jQuery(referenceElement).text().split(' ').slice(0,ContentFrame.findElementInContentFrame('#filter_prefix_num', '#webview-tooltip').val()).join(' ');
-                cur_query.jQuerySelector["filter_prefix"] = function() {
-                    return $(this).text().indexOf(target_prefix) === 0;
-                };
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_prefix");
-                delete cur_query.jQuerySelector["filter_prefix"];
-                helper(referenceElement, cur_query, 1);
-            }
-        });
-
-        ContentFrame.findElementInContentFrame('#filter_suffix', '#webview-tooltip').click(function(e) {
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_suffix");
-                let txt = jQuery(referenceElement).text().trim();
-                let target_suffix = txt.split(' ').splice(-ContentFrame.findElementInContentFrame('#filter_suffix_num', '#webview-tooltip').val()).join(' ');
-                cur_query.jQuerySelector["filter_suffix"] = function() {
-                    let cur_txt = $(this).text().trim()
-                    let idx = cur_txt.lastIndexOf(target_suffix);
-                    return (idx > 0 && cur_txt.length - idx === target_suffix.length);
-                };
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_suffix");
-                delete cur_query.jQuerySelector["filter_suffix"];
-                helper(referenceElement, cur_query, 1);
-            }
+        addjQuerySelector('#filter_suffix', function () {
+        	let txt = jQuery(referenceElement).text().trim();
+            let target_suffix = txt.split(' ').splice(-ContentFrame.findElementInContentFrame('#filter_suffix_num', '#webview-tooltip').val()).join(' ');
+            let cur_txt = $(this).text().trim()
+			let idx = cur_txt.lastIndexOf(target_suffix);
+			return (idx > 0 && cur_txt.length - idx === target_suffix.length);
         });
 
         function getXPath( element )
@@ -600,29 +437,9 @@ class TestTooltip {
             return xpath;
         }
 
-        /**
-        * get xpath of current element
-        * select all elements that have that xpath
-        * add those elements to highlights
-        */
-        ContentFrame.findElementInContentFrame('#filter_xpath', '#webview-tooltip').click(function(e) {
-            let cur = e.target;
-            if(cur.value === "0"){  //Add model to collection
-                cur.value = "1";
-                currentFilters.add("filter_xpath");
-                let target_xpath = getXPath(referenceElement);
-                console.log("XPath of clicked element is: ", target_xpath);
-                cur_query.jQuerySelector["xpath"] = function() {
-                    return getXPath($(this).get(0)) == target_xpath;
-                };
-                helper(referenceElement, cur_query, 0);
-            }
-            else{  //Take model off collection
-                cur.value = "0";
-                currentFilters.delete("filter_xpath");
-                delete cur_query.jQuerySelector["xpath"];
-                helper(referenceElement, cur_query, 1);
-            }
+        addjQuerySelector('#filter_prefix', function () {
+        	let target_xpath = getXPath(referenceElement);
+            return getXPath($(this).get(0)) == target_xpath;
         });
 
         ContentFrame.findElementInContentFrame('#filter_left_align_with', '#webview-tooltip').click(function(e) {
