@@ -247,20 +247,19 @@ class TestTooltip {
         }
 
         function addjQuerySelector(filter_id, selector_callback) {
-            if (filter_id === "#filter_class" && (referenceElement.className === '' || referenceElement.className === undefined)) {
-                alert("This element has no Class attribute!");
-                ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
-
-            if (filter_id === "#filter_id" && (referenceElement.id === '' || referenceElement.id === undefined)) {
-                alert("This element has no Id attribute!");
-                ContentFrame.findElementInContentFrame('#filter_id', '#webview-tooltip').attr("disabled","true");
-                return;
-            }
-
             let filter_name = filter_id.replace(/^#filter_/, '');
             ContentFrame.findElementInContentFrame(filter_id, '#webview-tooltip').click(function (e) {
+                if (filter_id === "#filter_class" && (referenceElement.className === '' || referenceElement.className === undefined)) {
+                    alert("This element has no Class attribute!");
+                    ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').attr("disabled","true");
+                    return;
+                }
+
+                if (filter_id === "#filter_id" && (referenceElement.id === '' || referenceElement.id === undefined)) {
+                    alert("This element has no Id attribute!");
+                    ContentFrame.findElementInContentFrame('#filter_id', '#webview-tooltip').attr("disabled","true");
+                    return;
+                }
                 let cur = e.target;
                 if (cur.value === "0") {  //Add model to collection
                     cur.value = "1";
