@@ -118,15 +118,17 @@ function tabController(tabId, tabAction, callback) {
                     chrome.tabs.executeScript(null, {file: "app/contentScript/WebDataExtractionNotation/query.js"}, function () {
                         chrome.tabs.executeScript(null, {file: "app/contentScript/webView/widget.js"}, function () {
                             chrome.tabs.executeScript(null, {file: "lib/popper/tooltip.js"}, function () {
-                                chrome.tabs.executeScript(null, {file: "app/contentScript/webView/labelMenu.js"}, function () {
-                                    chrome.tabs.executeScript(null, {file: "app/contentScript/webView/tooltip.js"}, function () {
-                                        chrome.tabs.executeScript(null, {file: "app/contentScript/webView/webViewController.js"}, function () {
-                                            chrome.tabs.executeScript(null, {file: "app/contentScript/webView/query_group.js"}, function () {
-                                                chrome.tabs.executeScript(null, {file: "app/contentScript/webView/query.js"}, function () {
-                                                    chrome.tabs.executeScript(null, {file: "app/contentScript/webView/notification.js"}, function () {
-                                                        if (chrome.runtime.lastError) {
-                                                            console.error(chrome.runtime.lastError.message);
-                                                        }
+                                chrome.tabs.executeScript(null, {file: "app/contentScript/webView/labelMenu"}, function () {
+                                    chrome.tabs.executeScript(null, {file: "app/contentScript/webView/tooltip.js.js"}, function () {
+                                        chrome.tabs.executeScript(null, {file: "app/contentScript/webView/filters.js"}, function () {
+                                            chrome.tabs.executeScript(null, {file: "app/contentScript/webView/webViewController.js"}, function () {
+                                                chrome.tabs.executeScript(null, {file: "app/contentScript/webView/query_group.js"}, function () {
+                                                    chrome.tabs.executeScript(null, {file: "app/contentScript/webView/query.js"}, function () {
+                                                        chrome.tabs.executeScript(null, {file: "app/contentScript/webView/notification.js"}, function () {
+                                                            if (chrome.runtime.lastError) {
+                                                                console.error(chrome.runtime.lastError.message);
+                                                            }
+                                                        });
                                                     });
                                                 });
                                             });
