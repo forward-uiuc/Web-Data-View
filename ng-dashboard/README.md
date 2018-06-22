@@ -1,8 +1,8 @@
-### The Architecture of Web Data View Front End
+# The Architecture of Web Data View Front End
 
 This is a brief introduction to the architecture of the chrome extension. For more details please refer to our [wiki](https://github.com/forward-uiuc/Web-Data-View/wiki/Basic-WebDataView-Usage).
 
-#####Widget
+### Widget
 
 Widget is the small menu in the top-right corner. Its functionality includes show/hide the query panel, confirming selected data, exporting to table. 
 
@@ -10,9 +10,9 @@ Widget is the small menu in the top-right corner. Its functionality includes sho
 
 Related file: 
 
-- widget.js: includes CSS for the widget and the click handler functions for the three buttons
+- widget.js: includes CSS for the widget and the functions for the three buttons
 
-##### Label
+### Label
 
 When a new element is clicked, which means the user might want to create a new column of data, a new label will appear in the widget. When it is clicked, an edit panel for the label will appear.
 
@@ -22,9 +22,9 @@ When a new element is clicked, which means the user might want to create a new c
 
 Related file: 
 
-- labelMenu.js: includes handler function for adding the label and code for the popup label menu as a click handler for the label.
+- labelMenu.js: includes function for adding the label to the widget and code for the popup label menu.
 
-#####Tooltip
+### Tooltip
 
 Tooltip is the small menu which appears when a user click an element in the page. User can also select filters in the dropdown menu.
 
@@ -32,6 +32,6 @@ Tooltip is the small menu which appears when a user click an element in the page
 
 Related file: 
 
-- tooltip.js: handler functions for functionalities including hover effect, click handler for the entire html document, click handler for the tooltip buttons
+- tooltip.js: includes functions for functionalities including hover effect, the tooltip buttons and click handler for the entire html document.
 - filters.js: includes filter functions in the tooltip.
 
