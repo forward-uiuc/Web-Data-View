@@ -7,7 +7,10 @@
     <bookmark url="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/widget.html" line="12" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0294df5f-c463-4145-b83d-f6f8836ae4cc" name="Default" comment="remove some unused functions" />
+    <list default="true" id="0294df5f-c463-4145-b83d-f6f8836ae4cc" name="Default" comment="remove some unused functions">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ng-dashboard/app/background.js" beforeDir="false" afterPath="$PROJECT_DIR$/ng-dashboard/app/background.js" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -22,14 +25,14 @@
     <favorites_list name="WebDataView" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.2753623">
+    <splitter split-orientation="horizontal" split-proportion="0.54049134">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="background.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ng-dashboard/app/background.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="515">
-                  <caret line="178" column="61" lean-forward="true" selection-start-line="178" selection-start-column="61" selection-end-line="178" selection-end-column="61" />
+                <state relative-caret-position="241">
+                  <caret line="120" column="110" selection-start-line="120" selection-start-column="110" selection-end-line="120" selection-end-column="110" />
                 </state>
               </provider>
             </entry>
@@ -135,8 +138,8 @@
           <file leaf-file-name="tooltip.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/tooltip.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1777">
-                  <caret line="555" column="49" selection-start-line="555" selection-start-column="49" selection-end-line="555" selection-end-column="49" />
+                <state relative-caret-position="6471">
+                  <caret line="545" column="28" lean-forward="true" selection-start-line="545" selection-start-column="28" selection-end-line="545" selection-end-column="28" />
                   <folding>
                     <element signature="n#!!doc" expanded="true" />
                     <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
@@ -211,8 +214,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>chrom</find>
-      <find>chrome</find>
       <find>cf</find>
       <find>ContentFrame</find>
       <find>TestToolTip</find>
@@ -241,6 +242,8 @@
       <find>appendLabel2</find>
       <find>127</find>
       <find>doWhenEnterDom</find>
+      <find>selectionHandler</find>
+      <find>preventDefault</find>
     </findStrings>
     <replaceStrings>
       <replace>cfn</replace>
@@ -281,8 +284,8 @@
         <option value="$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/query.js" />
         <option value="$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/labelMenu.js" />
         <option value="$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/filters.js" />
-        <option value="$PROJECT_DIR$/ng-dashboard/app/background.js" />
         <option value="$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/tooltip.js" />
+        <option value="$PROJECT_DIR$/ng-dashboard/app/background.js" />
       </list>
     </option>
   </component>
@@ -456,26 +459,26 @@
       <workItem from="1528092898738" duration="1757000" />
       <workItem from="1528172040006" duration="7347000" />
       <workItem from="1528923944972" duration="364000" />
-      <workItem from="1528927548233" duration="13207000" />
+      <workItem from="1528927548233" duration="15618000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="338497000" />
+    <option name="totallyTimeSpent" value="340908000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2453125" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14140625" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" weight="0.32957748" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.0013774105" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.0013774105" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32957748" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.3292011" />
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" id="Palette" order="3" />
@@ -769,17 +772,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ng-dashboard/app/background.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="515">
-          <caret line="178" column="61" lean-forward="true" selection-start-line="178" selection-start-column="61" selection-end-line="178" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ng-dashboard/app/contentScript/webView/tooltip.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1777">
-          <caret line="555" column="49" selection-start-line="555" selection-start-column="49" selection-end-line="555" selection-end-column="49" />
+        <state relative-caret-position="6471">
+          <caret line="545" column="28" lean-forward="true" selection-start-line="545" selection-start-column="28" selection-end-line="545" selection-end-column="28" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
@@ -801,6 +797,13 @@
             <element signature="n#style#0;n#i#1;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#i#2;n#div#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ng-dashboard/app/background.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="241">
+          <caret line="120" column="110" selection-start-line="120" selection-start-column="110" selection-end-line="120" selection-end-column="110" />
         </state>
       </provider>
     </entry>
