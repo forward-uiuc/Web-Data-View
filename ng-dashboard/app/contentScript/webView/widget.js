@@ -31,6 +31,17 @@ let port_tb = chrome.runtime.connect({name: "tbtb"});
 let circle_array = [];
 chrome.storage.local.set({'value': []});
 
+let query_script = {
+    extract: {
+        fields: [
+
+        ]
+    },
+    from: {
+        url: location.href
+    }
+}
+
 /**
  * add scripts to widget <head> tag
  * important note: don't add any scripts here if they need to access iFrame's DOM which has not loaded yet
@@ -145,6 +156,21 @@ $(document).ready(function(){
                             $('#webview-popper-container').remove();
                             // End Long's addition
                             e.preventDefault();
+                            // generate script object
+                            console.log(currentFilters);
+                            let new_field = {
+                                Field_id: field_label,
+                                match: {
+                                    type: "text"
+                                }
+                            }
+                            new_field.match.className = cur_query.class;
+                            new_field.match.tagName = cur_query.tag;
+                            new_field.match.fontSize = cur_query.css["font-size"];
+                            new_field.match.fontColor = cur_query.css["color"];
+                            query_script.extract.fields.push(new_field);
+                            ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').val(JSON.stringify(query_script,null,2));
+
                             currentFilters.clear();
                             click_flag = false;
                             //if(Object.keys(cur_query).length === 3){  //fixed when clicking apply, red box problem
@@ -173,6 +199,7 @@ $(document).ready(function(){
                                         let output = cur_web_noti.toJSON()[0];
                                         output['query'] = JSON.parse((cur_web_noti.toJSON()[0])['query']);
                                         array[array.length] = output;
+                                        console.log(array);
                                         // array[array.length] = cur_web_noti.toJSON()[0];
                                         chrome.storage.local.set({'value': array});
                                     }
