@@ -149,7 +149,14 @@ let appendLabel2Widget = function(labelName, labelColor) {
                     collected_data[i] = new_pair;
                 }
             }
-
+            query_script_fields = query_script.extract.fields;
+            for (i = 0; i < query_script_fields.length; i++) {
+                if (query_script_fields[i].Field_id === label_name) {
+                    query_script_fields[i].Field_id = input_label;
+                }
+            }
+            ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').val(JSON.stringify(query_script,null,2));
+            
             chrome.storage.local.get("value", function(items) {
                 if (!chrome.runtime.error){
                     let array = items["value"];

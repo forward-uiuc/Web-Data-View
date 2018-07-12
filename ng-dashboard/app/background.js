@@ -191,6 +191,10 @@ chrome.runtime.onConnect.addListener(function(port) {
             console.log("send message by desc reached!!!");
             socket.emit('send message by desc', {username: msg.username, message: msg.message, name:msg.name, domain_name: msg.domain_name, query_dom_element: msg.query_dom_element});
         }
+        else if (msg.answer == "save query"){
+            console.log("saving query");
+            socket.emit('save query', {message: msg.message, name:msg.name, domain_name: msg.domain_name});
+        }
         else if (msg.answer == "leave"){
             console.log("leave reached!!!");
             console.log(msg.capa);

@@ -30,7 +30,8 @@ document.body.appendChild(web_data_view_query);
 let cfq = new ContentFrame({
     'id':'webview-query',
     // 'appendTo': '#webdataview-floating-widget',
-    'css': ['lib/font-awesome/css/font-awesome.css'],
+    'js': ['lib/codemirror/codemirror.js','lib/codemirror/mode/javascript/javascript.js'],
+    'css': ['lib/font-awesome/css/font-awesome.css', 'lib/codemirror/codemirror.css'],
     'inlineCss': {"width": "35%", "height": "150px", "position": "fixed", "right": "0px", "top": "60px", "z-index": 2147483640, "border-style": "none", "border-radius": 0, "background": "transparent", "display": "display"}
 }, function(){
     // alert('callback called immediately after ContentFrame created');

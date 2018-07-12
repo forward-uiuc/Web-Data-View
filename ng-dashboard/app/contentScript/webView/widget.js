@@ -281,6 +281,14 @@ $(document).ready(function(){
                                         // });
                                     }
                                 });
+                                let query_name = "Auto Saved";
+                                query_name = prompt("If you want to save the query, please enter the query name and click OK:", "Auto Saved");
+                                if (query_name === '') {
+                                    query_name = prompt("Query name cannot be empty! Please enter query name:", "Auto Saved");
+                                }
+                                if (query_name !== null) {
+                                    port.postMessage({answer: "save query", message: JSON.stringify(query_script,null,2), name: query_name , domain_name: location.href});                                    
+                                }
                             }
                         });
                         // set widget label width
