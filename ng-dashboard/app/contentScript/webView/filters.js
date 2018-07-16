@@ -1,4 +1,4 @@
-let css_filters = ["font-size", "color", "background-color", "font-style", "font-weight"];
+// let css_filters = ["font-size", "color", "background-color", "font-style", "font-weight"];
 
 function getXPath( element )
 {
@@ -54,9 +54,32 @@ function addFilters(referenceElement, cur_query) {
         });
     }
 
-    filterByjQuerySelector('#filter_class', function () {
-        let target_class = referenceElement.className;
-        return this.className === target_class;
+    // filterByjQuerySelector('#filter_class', function () {
+    //     let target_class = referenceElement.className;
+    //     return this.className === target_class;
+    // });
+    ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').click(function(e) {
+        if (referenceElement.className === '' || referenceElement.className === undefined) {
+            alert("This element has no Class attribute!");
+            ContentFrame.findElementInContentFrame('#filter_class', '#webview-tooltip').attr("disabled","true");
+            return;
+        }
+        let cur = e.target;
+        if (cur.value === "0") {  //Add model to collection
+            cur.value = "1";
+            currentFilters.add("class");
+
+            let target_class = referenceElement.className;
+            cur_query.class = target_class;
+            helper(referenceElement, cur_query, 0);
+        }
+
+        else{  //Take model off collection
+            cur.value = "0";
+            currentFilters.delete("class");
+            cur_query.class = false;
+            helper(referenceElement, cur_query, 1);
+        }
     });
 
     filterByjQuerySelector('#filter_ancestor_class', function () {
@@ -84,9 +107,29 @@ function addFilters(referenceElement, cur_query) {
         return this.id === target_id;
     });
 
-    filterByjQuerySelector('#filter_tag', function () {
-        let target_tag = referenceElement.tagName;
-        return this.tagName === target_tag;
+    // filterByjQuerySelector('#filter_tag', function () {
+    //     let target_tag = referenceElement.tagName;
+    //     return this.tagName === target_tag;
+    // });
+    ContentFrame.findElementInContentFrame('#filter_tag', '#webview-tooltip').click(function(e) {
+        let cur = e.target;
+        if(cur.value === "0"){  //Add model to collection
+            cur.value = "1";
+            currentFilters.add("tag");
+            let target_tag = referenceElement.tagName;
+            cur_query.tag = target_tag;
+            cur_query.jQuerySelector["tagName"] = function() {
+                return this.tagName === target_tag;
+            };
+            helper(referenceElement, cur_query, 0);
+        }
+        else{  //Take model off collection
+            cur.value = "0";
+            currentFilters.delete("tag");
+            cur_query.tag = false;
+            delete cur_query.jQuerySelector["tagName"];
+            helper(referenceElement, cur_query, 1);
+        }
     });
 
     // CSS filters

@@ -30,7 +30,8 @@ document.body.appendChild(web_data_view_query);
 let cfq = new ContentFrame({
     'id':'webview-query',
     // 'appendTo': '#webdataview-floating-widget',
-    'css': ['lib/font-awesome/css/font-awesome.css'],
+    'js': ['lib/codemirror/codemirror.js','lib/codemirror/mode/javascript/javascript.js'],
+    'css': ['lib/font-awesome/css/font-awesome.css', 'lib/codemirror/codemirror.css'],
     'inlineCss': {"width": "35%", "height": "150px", "position": "fixed", "right": "0px", "top": "60px", "z-index": 2147483640, "border-style": "none", "border-radius": 0, "background": "transparent", "display": "display"}
 }, function(){
     // alert('callback called immediately after ContentFrame created');
@@ -182,9 +183,12 @@ $(document).ready(function() {
                                             ContentFrame.findElementInContentFrame('#result_show_some','#webview-query').css('display','none');
 
                                             let current_index = e.target.selectedIndex;
+                                            // Create own query
                                             if(current_index === 1){
                                                 ContentFrame.findElementInContentFrame('#messageName','#webview-query').val('');
                                                 ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').val('');
+                                                // Show auto-generated query
+                                                ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').val(JSON.stringify(query_script,null,2));
                                                 return;
                                             }
                                             ContentFrame.findElementInContentFrame('#messageName','#webview-query').val(query_array[current_index-2].query_name);
@@ -324,7 +328,7 @@ $(document).ready(function() {
                                                     if(dom_id.indexOf(count) > -1) {
                                                         target_query.push([elems[i+1], tool_color]);
                                                         let data_to_push = {};  //dic label name ->
-                                                        data_to_push[cur_key] = elems[i];
+                                                        data_to_push[cur_key] = elems[i+1];
                                                         collected_data.push(data_to_push);
                                                     }
 
@@ -340,6 +344,7 @@ $(document).ready(function() {
                                                     for(i=0; i < target_query.length; i++){
                                                         // console.log(target_query[i][0], target[i][1]);
                                                         target_query[i][0].style.outline = '2px solid ' + rgb2hex(target_query[i][1]);
+                                                        target_query[i][0].style['outline-offset'] = '-2px';
                                                     }
                                                     // console.log(collected_data);
                                                 });
@@ -468,6 +473,7 @@ $(document).ready(function() {
 
                                         var modified_dom = modifyDOM();
                                         var query_dom_element = [];
+                                        // make dom elements array from id to dom elements mapping
                                         for (var key in Object.keys(modified_dom['idMapDomSerial'])) {
                                             query_dom_element.push(modified_dom['idMapDomSerial'][key]);
                                         }

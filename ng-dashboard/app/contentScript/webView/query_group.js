@@ -34,6 +34,8 @@ function modifyDOM() {
         domSerial['text'] = elems[id].textContent;
         // if(elems[id].tagName == "SPAN")
         //   console.log(elems[id].textContent);
+
+        // A mapping from ids(numbers) to serialized dom elements. 
         idMapDomSerial[id] = domSerial;
         idMapDomObj[id] = elems[id];
         var domSerialHash = [domSerial['bottom'], domSerial['left'], domSerial['top'], domSerial['right']];
