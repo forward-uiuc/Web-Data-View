@@ -37,6 +37,8 @@ Our solution creates data view, which allows users to interact with web pages as
 ## To install
 Check out the code. And then load folder ng-dashboard you have just downloaded as an unpacked Chrome extension following the [instruction](https://github.com/forward-uiuc/Web-Data-View/wiki/Setup-Instructions). It will create button <img src='https://github.com/forward-uiuc/Web-Data-View/blob/master/ng-dashboard/assets/logo/logo_color_16.png'> for our extension at the top right corner of Chrome browser.
 
+To use the query execution module, you need to install and run the server. See instruction here: [Web Data View Server](https://github.com/forward-uiuc/Web-Data-View-server) 
+
 ## To use
 To use the extension, open a page like https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=laptop and click on our Chrome Extension button. Check our [User Guide](https://github.com/forward-uiuc/Web-Data-View/wiki/User-Guide) for more details!
 
