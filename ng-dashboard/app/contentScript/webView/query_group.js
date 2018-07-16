@@ -22,6 +22,7 @@ function modifyDOM() {
         domSerial['width'] = elems[id].getBoundingClientRect().width;
         domSerial['x'] = elems[id].getBoundingClientRect().x;
         domSerial['y'] = elems[id].getBoundingClientRect().y;
+        domSerial['fontSize'] = jQuery(elems[id]).css("font-size");
         domSerial['parent'] = -1;
         // if(elems[id].tagName == 'P' ||
         //     elems[id].tagName == 'H1' ||

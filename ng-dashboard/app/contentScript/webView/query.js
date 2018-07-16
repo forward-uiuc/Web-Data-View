@@ -322,7 +322,7 @@ $(document).ready(function() {
                                                     // }
                                                     count++;
                                                     if(dom_id.indexOf(count) > -1) {
-                                                        target_query.push([elems[i], tool_color]);
+                                                        target_query.push([elems[i+1], tool_color]);
                                                         let data_to_push = {};  //dic label name ->
                                                         data_to_push[cur_key] = elems[i];
                                                         collected_data.push(data_to_push);
