@@ -45,6 +45,8 @@ To use the extension, open a page like https://www.amazon.com/s/ref=nb_sb_noss?u
 ## To make change to the code
 After making changes to the code, you need to reload the unpacked extension on [chrome://extensions/](chrome://extensions/) so that the changes can take effect.
 
+In each subfolder that corresponds to a particular module, we have a README file. So please check them out.
+
 ## Potential improvements
 * Makes selecting data value samples easily by smart segmentation
 * Improve the query language to allow more descriptive operators, including specifying relationship among fields. For example, if would be useful for users to describe product title is the link with the most number of tokens in a record. It means that the system will have find records first using the current primitive operators, and then use the record field as the pivot for finding other fields such as title.
