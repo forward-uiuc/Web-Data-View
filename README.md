@@ -47,7 +47,7 @@ After making changes to the code, you need to reload the unpacked extension on [
 
 ## Potential improvements
 * Makes selecting data value samples easily by smart segmentation
-* Allows users to descriptive queries, which are more robust against changes than classnames
-* ???
+* Improve the query language to allow more descriptive operators, including specifying relationship among fields. For example, if would be useful for users to describe product title is the link with the most number of tokens in a record. It means that the system will have find records first using the current primitive operators, and then use the record field as the pivot for finding other fields such as title.
+* Connect the current point-and-click interface and the query language to make the user experience smooth. For example, when writing queries, users may need to know the color code of the target elements. Now they have to Inspection to do so. It would be convenient if users can use the mouse to point to target element get the color code directly when writing queries. It is similar to when writing formulas in Excel in which we can refer to other cells simply by clicking on them.
 
 This software is developed at [Forward@UIUC Group](http://forwarddatalab.org/kevinchang)
