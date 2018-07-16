@@ -45,7 +45,7 @@ To use the extension, open a page like https://www.amazon.com/s/ref=nb_sb_noss?u
 ## To make change to the code
 After making changes to the code, you need to reload the unpacked extension on [chrome://extensions/](chrome://extensions/) so that the changes can take effect.
 
-In each subfolder that corresponds to a particular module, we have a README file. For example, this is [Chrome Extension code explanation](ng-dashboard/README.md) and this is for [Web Notation Library](ng-dashboard/docs/README.md)  .Please check them out.
+In each subfolder that corresponds to a particular module, we have a README file. For example, this is for [Chrome Extension code explanation](ng-dashboard/README.md), this is for [Web Notation Library](ng-dashboard/docs/README.md) and this is for [Selenium-based Test Cases](Testcases/README.md). Please check them out.
 
 ## Potential improvements
 * Makes selecting data value samples easily by smart segmentation
