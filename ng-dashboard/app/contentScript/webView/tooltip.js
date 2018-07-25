@@ -63,6 +63,15 @@ function helper(referenceElement, cur_query, flag_val){
         cur_query.highlightSelectedElements(tooltip_color);
         field_label = ntc.name(rgb2hex(tooltip_color))[1]; //any color -> close name to it
         fieldname_color[field_label] = tooltip_color;
+        // Remove previous items related to the field label
+        for (let i = 0; i < collected_data.length; i++) {
+            if(collected_data[i][field_label] !== undefined){
+                collected_data.splice(i, 1);
+                i--;
+            }
+        };
+        console.log(collected_data);
+
         let dom_elements = cur_query.execute();
         console.log(dom_elements);
         let data_to_push = null;

@@ -105,6 +105,13 @@ class ContentFrame {
         }
     }
 
+    loadScript(filepath, callback) {
+        this.iframe.contents().find("head").append('<script src="'+chrome.extension.getURL(filepath)+'"></script>');
+
+        if (callback && typeof(callback) === 'function') {
+            callback();
+        }
+    }
     /**
      * load JS script from file
      * @param {string} filepath file path of JavaScript, not the chrome extension URL

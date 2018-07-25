@@ -30,8 +30,7 @@ document.body.appendChild(web_data_view_query);
 let cfq = new ContentFrame({
     'id':'webview-query',
     // 'appendTo': '#webdataview-floating-widget',
-    'js': ['lib/codemirror/codemirror.js','lib/codemirror/mode/javascript/javascript.js'],
-    'css': ['lib/font-awesome/css/font-awesome.css', 'lib/codemirror/codemirror.css'],
+    'css': ['lib/font-awesome/css/font-awesome.css'],
     'inlineCss': {"width": "35%", "height": "150px", "position": "fixed", "right": "0px", "top": "60px", "z-index": 2147483640, "border-style": "none", "border-radius": 0, "background": "transparent", "display": "display"}
 }, function(){
     // alert('callback called immediately after ContentFrame created');
@@ -79,12 +78,17 @@ $(document).ready(function() {
 
     cfq.loadJS('lib/jquery/jquery-3.1.1.min.js', function() {
         cfq.loadJS('lib/socket.io', function() {
+            // cfq.loadScript('lib/codemirror/codemirror.js', function() {
+                // cfq.loadCSS('lib/codemirror/codemirror.css',function (){
+                    // cfq.loadScript('lib/codemirror/mode/javascript/javascript.js', function() {
             cfq.loadCSS('lib/font-awesome/css/font-awesome.css', function() {
                 cfq.loadCSS('lib/bootstrap/css/bootstrap.min.css', function() {
                     cfq.loadCSS('assets/css/content-frame-internal.css', function() {
                         cfq.body.load(chrome.extension.getURL("app/contentScript/webView/index.html"), function () {
                             cfq_iframe.ready(function() {
-
+                                // let cm = CodeMirror.fromTextArea(document.getElementById("messageDesc"), {
+                                //     lineNumbers: true,
+                                // });
                                 let $messageForm = $('#messageForm');
                                 let $messageFormDesc = $('#messageFormDesc');
                                 let $message;
@@ -309,7 +313,7 @@ $(document).ready(function() {
                                             $chat.append('<li><strong>'+data.users+'</strong>: '+data.msg+'</li>');
                                             $chat.animate({scrollTop: $chat.prop("scrollHeight")}, 1000);
                                             let data_msg = JSON.parse(data.msg);
-                                            // console.log(data_msg);
+                                            console.log(data_msg);
                                             for(let cur_key in data_msg){
                                                 let dom_id = data_msg[cur_key];
                                                 let count = 0; let cur_class;
@@ -517,6 +521,9 @@ $(document).ready(function() {
                                 }
 
                             });
+// });
+// });
+// });
                         });
                     });
                 });

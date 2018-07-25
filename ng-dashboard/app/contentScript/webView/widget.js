@@ -42,6 +42,22 @@ let query_script = {
     }
 }
 
+function addFieldToScript(query_script) {
+    // generate script object
+    let new_field = {
+        Field_id: field_label,
+        match: {
+            type: "text"
+        }
+    }
+    new_field.match.className = cur_query.class;
+    new_field.match.tagName = cur_query.tag;
+    new_field.match.fontSize = cur_query.css["font-size"];
+    new_field.match.fontColor = cur_query.css["color"];
+    query_script.extract.fields.push(new_field);
+    ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').val(JSON.stringify(query_script,null,2));
+}
+
 /**
  * add scripts to widget <head> tag
  * important note: don't add any scripts here if they need to access iFrame's DOM which has not loaded yet
@@ -156,20 +172,7 @@ $(document).ready(function(){
                             $('#webview-popper-container').remove();
                             // End Long's addition
                             e.preventDefault();
-                            // generate script object
-                            console.log(currentFilters);
-                            let new_field = {
-                                Field_id: field_label,
-                                match: {
-                                    type: "text"
-                                }
-                            }
-                            new_field.match.className = cur_query.class;
-                            new_field.match.tagName = cur_query.tag;
-                            new_field.match.fontSize = cur_query.css["font-size"];
-                            new_field.match.fontColor = cur_query.css["color"];
-                            query_script.extract.fields.push(new_field);
-                            ContentFrame.findElementInContentFrame('#messageDesc','#webview-query').val(JSON.stringify(query_script,null,2));
+                            addFieldToScript(query_script);
 
                             currentFilters.clear();
                             click_flag = false;
@@ -228,6 +231,15 @@ $(document).ready(function(){
                                 alert("Please select boxs and change the label to <records>!");
                             }
                             else{
+                                let query_name = "Auto Saved";
+                                query_name = prompt("If you want to save the query, please enter the query name and click OK:", "Auto Saved");
+                                if (query_name === '') {
+                                    query_name = prompt("Query name cannot be empty! Please enter query name:", "Auto Saved");
+                                }
+                                if (query_name !== null) {
+                                    port.postMessage({answer: "save query", message: JSON.stringify(query_script,null,2), name: query_name , domain_name: location.href});                                    
+                                }
+                                // Collect record dom elements
                                 for(i = 0; i < collected_data.length; i++){
                                     if(Object.keys(collected_data[i])[0] === "records"){
                                         record_dom.push(Object.values(collected_data[i])[0]);
@@ -281,14 +293,7 @@ $(document).ready(function(){
                                         // });
                                     }
                                 });
-                                let query_name = "Auto Saved";
-                                query_name = prompt("If you want to save the query, please enter the query name and click OK:", "Auto Saved");
-                                if (query_name === '') {
-                                    query_name = prompt("Query name cannot be empty! Please enter query name:", "Auto Saved");
-                                }
-                                if (query_name !== null) {
-                                    port.postMessage({answer: "save query", message: JSON.stringify(query_script,null,2), name: query_name , domain_name: location.href});                                    
-                                }
+
                             }
                         });
                         // set widget label width
